@@ -1,0 +1,1266 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Scientist Data Collection Form</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 20px;
+        min-height: 100vh;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        padding: 40px;
+      }
+
+      h1 {
+        color: #667eea;
+        text-align: center;
+        margin-bottom: 10px;
+        font-size: 2.5em;
+      }
+
+      .subtitle {
+        text-align: center;
+        color: #666;
+        margin-bottom: 30px;
+        font-size: 1.1em;
+      }
+
+      .section {
+        margin-bottom: 35px;
+        padding: 25px;
+        background: #f8f9fa;
+        border-radius: 10px;
+        border-left: 4px solid #667eea;
+      }
+
+      .section-title {
+        color: #764ba2;
+        font-size: 1.4em;
+        margin-bottom: 20px;
+        font-weight: 600;
+      }
+
+      .form-group {
+        margin-bottom: 20px;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 8px;
+        color: #333;
+        font-weight: 500;
+        font-size: 0.95em;
+      }
+
+      input[type="text"],
+      input[type="number"],
+      select,
+      textarea {
+        width: 100%;
+        padding: 12px;
+        border: 2px solid #ddd;
+        border-radius: 8px;
+        font-size: 1em;
+        transition: all 0.3s;
+      }
+
+      input[type="text"]:focus,
+      input[type="number"]:focus,
+      select:focus,
+      textarea:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+      }
+
+      input[type="file"] {
+        padding: 10px;
+        border: 2px dashed #ddd;
+        border-radius: 8px;
+        width: 100%;
+        cursor: pointer;
+      }
+
+      .two-column {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+      }
+
+      .table-container {
+        overflow-x: auto;
+        margin-top: 15px;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        background: white;
+        border-radius: 8px;
+        overflow: hidden;
+      }
+
+      th {
+        background: #667eea;
+        color: white;
+        padding: 12px;
+        text-align: left;
+        font-weight: 600;
+      }
+
+      td {
+        padding: 10px;
+        border-bottom: 1px solid #eee;
+      }
+
+      td input,
+      td select {
+        margin-bottom: 0;
+      }
+
+      .btn {
+        padding: 12px 25px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 1em;
+        font-weight: 600;
+        transition: all 0.3s;
+        margin-right: 10px;
+      }
+
+      .btn-primary {
+        background: #667eea;
+        color: white;
+      }
+
+      .btn-primary:hover {
+        background: #5568d3;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+      }
+
+      .btn-secondary {
+        background: #28a745;
+        color: white;
+      }
+
+      .btn-secondary:hover {
+        background: #218838;
+        transform: translateY(-2px);
+      }
+
+      .btn-danger {
+        background: #dc3545;
+        color: white;
+        padding: 8px 15px;
+        font-size: 0.9em;
+      }
+
+      .btn-danger:hover {
+        background: #c82333;
+      }
+
+      .add-more {
+        margin-top: 15px;
+      }
+
+      .submit-section {
+        text-align: center;
+        margin-top: 40px;
+        padding-top: 30px;
+        border-top: 2px solid #eee;
+      }
+
+      .alert {
+        padding: 15px;
+        margin-bottom: 20px;
+        border-radius: 8px;
+        display: none;
+      }
+
+      .alert-success {
+        background: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+      }
+
+      .alert-error {
+        background: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+      }
+
+      .hidden {
+        display: none;
+      }
+
+      .conditional-fields {
+        margin-top: 10px;
+        padding: 15px;
+        background: white;
+        border-radius: 8px;
+      }
+
+      @media (max-width: 768px) {
+        .two-column {
+          grid-template-columns: 1fr;
+        }
+
+        .container {
+          padding: 20px;
+        }
+      }
+
+      /* Image Preview Styles */
+      .image-preview-item {
+        position: relative;
+        border: 2px solid #ddd;
+        border-radius: 8px;
+        overflow: hidden;
+        background: white;
+      }
+
+      .image-preview-item img {
+        width: 100%;
+        height: 150px;
+        object-fit: cover;
+        display: block;
+      }
+
+      .image-preview-item .image-name {
+        padding: 8px;
+        font-size: 0.85em;
+        text-align: center;
+        background: #f8f9fa;
+        color: #333;
+        word-break: break-word;
+      }
+
+      .image-preview-item .remove-image {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        background: #dc3545;
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 25px;
+        height: 25px;
+        cursor: pointer;
+        font-weight: bold;
+        line-height: 1;
+      }
+
+      .image-preview-item .remove-image:hover {
+        background: #c82333;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Scientists' Data Collection Form</h1>
+      <p class="subtitle">ICAR Institute Research Information System</p>
+
+      <div id="alertBox" class="alert"></div>
+
+      <form id="scientistForm">
+        <!-- Basic Information -->
+        <div class="section">
+          <h2 class="section-title">Basic Information</h2>
+
+          <div class="form-group">
+            <label for="institute_name">Institute Name Short*</label>
+            <div style="display: flex; align-items: center">
+              <span
+                style="
+                  padding: 12px;
+                  background: #e9ecef;
+                  border: 2px solid #ddd;
+                  border-right: none;
+                  border-radius: 8px 0 0 8px;
+                "
+                >ICAR-</span
+              >
+              <input
+                type="text"
+                id="institute_name"
+                required
+                style="border-radius: 0 8px 8px 0; flex: 1"
+              />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="scientist_name">Scientist Name*</label>
+            <input
+              type="text"
+              id="scientist_name"
+              required
+              placeholder="Enter scientist name"
+            />
+          </div>
+
+          <div class="two-column">
+            <div class="form-group">
+              <label for="month">Month*</label>
+              <select id="month" required>
+                <option value="">Select Month</option>
+                <option value="January">January</option>
+                <option value="February">February</option>
+                <option value="March">March</option>
+                <option value="April">April</option>
+                <option value="May">May</option>
+                <option value="June">June</option>
+                <option value="July">July</option>
+                <option value="August">August</option>
+                <option value="September">September</option>
+                <option value="October">October</option>
+                <option value="November">November</option>
+                <option value="December">December</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="year">Year*</label>
+              <select id="year" required>
+                <option value="">Select Year</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- H-Index & Citations -->
+        <div class="section">
+          <h2 class="section-title">H-Index & Citations</h2>
+
+          <div class="two-column">
+            <div class="form-group">
+              <label for="h_ind_google">H-Index (Google Scholar)</label>
+              <input
+                type="number"
+                id="h_ind_google"
+                min="0"
+                placeholder="Enter H-Index"
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="h_ind_res_gate">H-Index (Research Gate)</label>
+              <input
+                type="number"
+                id="h_ind_res_gate"
+                min="0"
+                placeholder="Enter H-Index"
+              />
+            </div>
+          </div>
+
+          <div class="two-column">
+            <div class="form-group">
+              <label for="num_cit_google">Citations (Google Scholar)</label>
+              <input
+                type="number"
+                id="num_cit_google"
+                min="0"
+                placeholder="Enter citations"
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="num_cit_res_gate">Citations (Research Gate)</label>
+              <input
+                type="number"
+                id="num_cit_res_gate"
+                min="0"
+                placeholder="Enter citations"
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- External Projects -->
+        <div class="section">
+          <h2 class="section-title">Externally Funded Projects (>50 Lakhs)</h2>
+          <div class="table-container">
+            <table id="projectsTable">
+              <thead>
+                <tr>
+                  <th>S.No.</th>
+                  <th>Project Title</th>
+                  <th>Funding Agency</th>
+                  <th>Start Date</th>
+                  <th>End Date</th>
+                  <th>Duration</th>
+                  <th>Budget</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="projectsBody"></tbody>
+            </table>
+          </div>
+          <button
+            type="button"
+            class="btn btn-secondary add-more"
+            onclick="addProjectRow()"
+          >
+            + Add Project
+          </button>
+        </div>
+
+        <!-- Programs Organized -->
+        <div class="section">
+          <h2 class="section-title">Programs Organized</h2>
+          <div class="table-container">
+            <table id="programsTable">
+              <thead>
+                <tr>
+                  <th>S.No.</th>
+                  <th>Title</th>
+                  <th>Start Date</th>
+                  <th>End Date</th>
+                  <th>Duration</th>
+                  <th>Venue</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="programsBody"></tbody>
+            </table>
+          </div>
+          <button
+            type="button"
+            class="btn btn-secondary add-more"
+            onclick="addProgramRow()"
+          >
+            + Add Program
+          </button>
+        </div>
+
+        <!-- IPR Generated -->
+        <div class="section">
+          <h2 class="section-title">IPR Generated</h2>
+          <div class="table-container">
+            <table id="iprTable">
+              <thead>
+                <tr>
+                  <th>S.No.</th>
+                  <th>IPR Name/Type</th>
+                  <th>Date of Grant</th>
+                  <th>Registration No.</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="iprBody"></tbody>
+            </table>
+          </div>
+          <button
+            type="button"
+            class="btn btn-secondary add-more"
+            onclick="addIPRRow()"
+          >
+            + Add IPR
+          </button>
+        </div>
+
+        <!-- Technology Commercialization -->
+        <div class="section">
+          <h2 class="section-title">Technology Commercialization</h2>
+          <div class="table-container">
+            <table id="techComTable">
+              <thead>
+                <tr>
+                  <th>S.No.</th>
+                  <th>Head</th>
+                  <th>Name</th>
+                  <th>Licensee</th>
+                  <th>Date</th>
+                  <th>License Fee</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="techComBody"></tbody>
+            </table>
+          </div>
+          <button
+            type="button"
+            class="btn btn-secondary add-more"
+            onclick="addTechComRow()"
+          >
+            + Add Entry
+          </button>
+        </div>
+
+        <!-- Publications -->
+        <div class="section">
+          <h2 class="section-title">Publications</h2>
+          <div class="table-container">
+            <table id="pubTable">
+              <thead>
+                <tr>
+                  <th>S.No.</th>
+                  <th>Publication (APA Style)</th>
+                  <th>Impact Factor</th>
+                  <th>NAAS Rating</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="pubBody"></tbody>
+            </table>
+          </div>
+          <button
+            type="button"
+            class="btn btn-secondary add-more"
+            onclick="addPubRow()"
+          >
+            + Add Publication
+          </button>
+        </div>
+
+        <!-- Training Conducted -->
+        <div class="section">
+          <h2 class="section-title">Training Conducted</h2>
+          <div class="table-container">
+            <table id="trainTable">
+              <thead>
+                <tr>
+                  <th>S.No.</th>
+                  <th>Training Name</th>
+                  <th>Sponsor</th>
+                  <th>Start Date</th>
+                  <th>End Date</th>
+                  <th>Duration</th>
+                  <th>Participants</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="trainBody"></tbody>
+            </table>
+          </div>
+          <button
+            type="button"
+            class="btn btn-secondary add-more"
+            onclick="addTrainRow()"
+          >
+            + Add Training
+          </button>
+        </div>
+
+        <!-- Research Highlights -->
+        <div class="section">
+          <h2 class="section-title">
+            Significant Research Findings (Required)*
+          </h2>
+
+          <div class="form-group">
+            <label for="res_highlight"
+              >Research Highlight (300-500 words)*</label
+            >
+            <textarea
+              id="res_highlight"
+              rows="6"
+              required
+              placeholder="Enter significant research findings (type NA if nothing) with potential impact..."
+            ></textarea>
+            <small style="color: #666"
+              >Word count: <span id="wordCount">0</span></small
+            >
+          </div>
+
+          <div class="form-group">
+            <label for="res_highlight_fig"
+              >Upload Figures (JPEG/PNG/TIFF) - Multiple files allowed*</label
+            >
+            <!--multiple
+            required: write this just below the line ... you can select multiple images-->
+            <input
+              type="file"
+              id="res_highlight_fig"
+              accept=".jpg,.jpeg,.png,.tiff,.tif"
+            />
+            <small style="color: #666; display: block; margin-top: 5px"
+              >You can select multiple images</small
+            >
+          </div>
+
+          <!-- Image Preview Area -->
+          <div
+            id="imagePreviewContainer"
+            style="display: none; margin-top: 15px"
+          >
+            <h4 style="color: #764ba2; margin-bottom: 10px">
+              Selected Images Preview:
+            </h4>
+            <div
+              id="imagePreviewGrid"
+              style="
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                gap: 15px;
+              "
+            ></div>
+          </div>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="submit-section">
+          <button
+            type="submit"
+            class="btn btn-primary"
+            style="font-size: 1.2em; padding: 15px 40px"
+          >
+            Submit
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <script>
+      // Initialize year dropdown
+      const yearSelect = document.getElementById("year");
+      const currentYear = new Date().getFullYear();
+      for (let year = currentYear; year >= currentYear - 10; year--) {
+        const option = document.createElement("option");
+        option.value = year;
+        option.textContent = year;
+        yearSelect.appendChild(option);
+      }
+
+      // Auto-capitalize function
+      function autoCapitalize(input) {
+        input.addEventListener("input", function (e) {
+          const start = this.selectionStart;
+          const end = this.selectionEnd;
+          this.value = this.value.toUpperCase();
+          this.setSelectionRange(start, end);
+        });
+      }
+
+      // Remove special characters
+      function removeSpecialChars(input) {
+        input.addEventListener("input", function (e) {
+          this.value = this.value.replace(/[.,!@#$^&()\-_+=;:'"]/g, "");
+        });
+      }
+
+      // Apply auto-capitalize to relevant fields
+      autoCapitalize(document.getElementById("institute_name"));
+      autoCapitalize(document.getElementById("scientist_name"));
+      removeSpecialChars(document.getElementById("scientist_name"));
+
+      // Word count for research highlight
+      document
+        .getElementById("res_highlight")
+        .addEventListener("input", function () {
+          const text = this.value.trim();
+          const words = text ? text.split(/\s+/).length : 0;
+          document.getElementById("wordCount").textContent = words;
+          autoCapitalize(this);
+        });
+
+      // Image preview functionality
+      let selectedFiles = [];
+
+      document
+        .getElementById("res_highlight_fig")
+        .addEventListener("change", function (e) {
+          const files = Array.from(e.target.files);
+          selectedFiles = files;
+          displayImagePreviews(files);
+        });
+
+      function displayImagePreviews(files) {
+        const container = document.getElementById("imagePreviewContainer");
+        const grid = document.getElementById("imagePreviewGrid");
+
+        if (files.length === 0) {
+          container.style.display = "none";
+          return;
+        }
+
+        container.style.display = "block";
+        grid.innerHTML = "";
+
+        files.forEach((file, index) => {
+          const reader = new FileReader();
+
+          reader.onload = function (e) {
+            const previewItem = document.createElement("div");
+            previewItem.className = "image-preview-item";
+            previewItem.innerHTML = `
+                <button type="button" class="remove-image" onclick="removeImage(${index})" title="Remove image">×</button>
+                <img src="${e.target.result}" alt="${file.name}">
+                <div class="image-name">${file.name}</div>
+            `;
+            grid.appendChild(previewItem);
+          };
+
+          reader.readAsDataURL(file);
+        });
+      }
+
+      function removeImage(index) {
+        selectedFiles.splice(index, 1);
+
+        // Update the file input
+        const dt = new DataTransfer();
+        selectedFiles.forEach((file) => dt.items.add(file));
+        document.getElementById("res_highlight_fig").files = dt.files;
+
+        displayImagePreviews(selectedFiles);
+      }
+
+      // Calculate duration in months
+      function calculateMonthsDuration(startDate, endDate) {
+        if (!startDate || !endDate) return "";
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+        const months =
+          (end.getFullYear() - start.getFullYear()) * 12 +
+          (end.getMonth() - start.getMonth());
+        return months + (months === 1 ? " month" : " months");
+      }
+
+      // Calculate duration in years, months, days
+      function calculateFullDuration(startDate, endDate) {
+        if (!startDate || !endDate) return "";
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+
+        let years = end.getFullYear() - start.getFullYear();
+        let months = end.getMonth() - start.getMonth();
+        let days = end.getDate() - start.getDate();
+
+        if (days < 0) {
+          months--;
+          days += new Date(end.getFullYear(), end.getMonth(), 0).getDate();
+        }
+        if (months < 0) {
+          years--;
+          months += 12;
+        }
+
+        const parts = [];
+        if (years > 0) parts.push(years + (years === 1 ? " year" : " years"));
+        if (months > 0)
+          parts.push(months + (months === 1 ? " month" : " months"));
+        if (days > 0) parts.push(days + (days === 1 ? " day" : " days"));
+
+        return parts.join(", ") || "0 days";
+      }
+
+      // Add Project Row
+      let projectCounter = 0;
+      function addProjectRow() {
+        projectCounter++;
+        const tbody = document.getElementById("projectsBody");
+        const row = tbody.insertRow();
+        row.innerHTML = `
+                <td>${projectCounter}</td>
+                <td><input type="text" class="auto-cap" placeholder="Title or NA" onchange="checkProjectNA(this)"></td>
+                <td>
+                    <select onchange="handleAgencySelect(this)">
+                        <option value="">Select Agency</option>
+                        <option value="RKVY">RKVY</option>
+                        <option value="DST">DST</option>
+                        <option value="DBT">DBT</option>
+                        <option value="ANRF">ANRF</option>
+                        <option value="SERB">SERB</option>
+                        <option value="OTHER">OTHER</option>
+                    </select>
+                    <input type="text" class="auto-cap hidden" placeholder="Specify agency">
+                </td>
+                <td><input type="date" onchange="updateProjectDuration(this)"></td>
+                <td><input type="date" onchange="updateProjectDuration(this)"></td>
+                <td><input type="text" readonly placeholder="Auto-calculated"></td>
+                <td><input type="number" placeholder="Budget"></td>
+                <td><button type="button" class="btn btn-danger" onclick="deleteRow(this)">Delete</button></td>
+            `;
+        applyAutoCapitalize(row);
+      }
+
+      function handleAgencySelect(select) {
+        const textInput = select.nextElementSibling;
+        if (select.value === "OTHER") {
+          textInput.classList.remove("hidden");
+          textInput.required = true;
+        } else {
+          textInput.classList.add("hidden");
+          textInput.required = false;
+          textInput.value = "";
+        }
+      }
+
+      function checkProjectNA(input) {
+        input.value = input.value.toUpperCase();
+        const row = input.closest("tr");
+        const inputs = row.querySelectorAll("input, select");
+        if (input.value === "NA") {
+          inputs.forEach((el, idx) => {
+            if (idx > 1) el.disabled = true;
+          });
+        } else {
+          inputs.forEach((el) => (el.disabled = false));
+        }
+      }
+
+      function updateProjectDuration(input) {
+        const row = input.closest("tr");
+        const startDate = row.cells[3].querySelector("input").value;
+        const endDate = row.cells[4].querySelector("input").value;
+        const durationInput = row.cells[5].querySelector("input");
+        durationInput.value = calculateMonthsDuration(startDate, endDate);
+      }
+
+      // Add Program Row
+      let programCounter = 0;
+      function addProgramRow() {
+        programCounter++;
+        const tbody = document.getElementById("programsBody");
+        const row = tbody.insertRow();
+        row.innerHTML = `
+                <td>${programCounter}</td>
+                <td>
+                    <select onchange="handleProgramSelect(this)">
+                        <option value="">Select Type</option>
+                        <option value="AICRP AGM">AICRP AGM</option>
+                        <option value="AINP AGM">AINP AGM</option>
+                        <option value="Conference">Conference</option>
+                        <option value="Symposium">Symposium</option>
+                        <option value="OTHER">OTHER</option>
+                    </select>
+                    <input type="text" class="auto-cap hidden" placeholder="Specify type">
+                </td>
+                <td><input type="date" onchange="updateProgramDuration(this)"></td>
+                <td><input type="date" onchange="updateProgramDuration(this)"></td>
+                <td><input type="text" readonly placeholder="Auto-calculated"></td>
+                <td><input type="text" class="auto-cap" placeholder="Venue"></td>
+                <td><button type="button" class="btn btn-danger" onclick="deleteRow(this)">Delete</button></td>
+            `;
+        applyAutoCapitalize(row);
+      }
+
+      function handleProgramSelect(select) {
+        const textInput = select.nextElementSibling;
+        if (select.value === "OTHER") {
+          textInput.classList.remove("hidden");
+          textInput.required = true;
+        } else {
+          textInput.classList.add("hidden");
+          textInput.required = false;
+          textInput.value = "";
+        }
+      }
+
+      function updateProgramDuration(input) {
+        const row = input.closest("tr");
+        const startDate = row.cells[2].querySelector("input").value;
+        const endDate = row.cells[3].querySelector("input").value;
+        const durationInput = row.cells[4].querySelector("input");
+        durationInput.value = calculateFullDuration(startDate, endDate);
+      }
+
+      // Add IPR Row
+      let iprCounter = 0;
+      function addIPRRow() {
+        iprCounter++;
+        const tbody = document.getElementById("iprBody");
+        const row = tbody.insertRow();
+        row.innerHTML = `
+                <td>${iprCounter}</td>
+                <td>
+                    <select>
+                        <option value="">Select Type</option>
+                        <option value="Patent">Patent</option>
+                        <option value="Copyright">Copyright</option>
+                        <option value="Trademark">Trademark</option>
+                        <option value="Design">Design</option>
+                        <option value="GI">GI</option>
+                    </select>
+                </td>
+                <td><input type="date"></td>
+                <td><input type="text" class="auto-cap" placeholder="Registration No."></td>
+                <td><button type="button" class="btn btn-danger" onclick="deleteRow(this)">Delete</button></td>
+            `;
+        applyAutoCapitalize(row);
+      }
+
+      // Add Tech Commercialization Row
+      let techComCounter = 0;
+      function addTechComRow() {
+        techComCounter++;
+        const tbody = document.getElementById("techComBody");
+        const row = tbody.insertRow();
+        row.innerHTML = `
+                <td>${techComCounter}</td>
+                <td>
+                    <select>
+                        <option value="">Select Head</option>
+                        <option value="Technology">Technology</option>
+                        <option value="Varieties">Varieties</option>
+                        <option value="MoA Signed">MoA Signed</option>
+                    </select>
+                </td>
+                <td><input type="text" class="auto-cap" placeholder="Name"></td>
+                <td><input type="text" class="auto-cap" placeholder="Licensee"></td>
+                <td><input type="date"></td>
+                <td><input type="number" placeholder="License Fee"></td>
+                <td><button type="button" class="btn btn-danger" onclick="deleteRow(this)">Delete</button></td>
+            `;
+        applyAutoCapitalize(row);
+      }
+
+      // Add Publication Row
+      let pubCounter = 0;
+      function addPubRow() {
+        pubCounter++;
+        const tbody = document.getElementById("pubBody");
+        const row = tbody.insertRow();
+        row.innerHTML = `
+                <td>${pubCounter}</td>
+                <td><textarea rows="2" placeholder="APA reference"></textarea></td>
+                <td><input type="text" placeholder="IF or NA" onchange="updateNAAS(this)"></td>
+                <td><input type="text" placeholder="NAAS Rating"></td>
+                <td><button type="button" class="btn btn-danger" onclick="deleteRow(this)">Delete</button></td>
+            `;
+      }
+
+      function updateNAAS(input) {
+        const row = input.closest("tr");
+        const naasInput = row.cells[3].querySelector("input");
+        const ifValue = input.value.trim().toUpperCase();
+
+        if (ifValue !== "NA" && ifValue !== "" && !isNaN(parseFloat(ifValue))) {
+          const calculatedNAAS = parseFloat(ifValue) + 6;
+          naasInput.value = calculatedNAAS.toFixed(2);
+        } else if (ifValue === "NA") {
+          naasInput.value = "";
+          naasInput.readOnly = false;
+        }
+      }
+
+      // Add Training Row
+      let trainCounter = 0;
+      function addTrainRow() {
+        trainCounter++;
+        const tbody = document.getElementById("trainBody");
+        const row = tbody.insertRow();
+        row.innerHTML = `
+                <td>${trainCounter}</td>
+                <td><input type="text" class="auto-cap" placeholder="Training name"></td>
+                <td>
+                    <select onchange="handleSponsorSelect(this)">
+                        <option value="">Select Sponsor</option>
+                        <option value="ICAR">ICAR</option>
+                        <option value="RKVY">RKVY</option>
+                        <option value="DST">DST</option>
+                        <option value="DBT">DBT</option>
+                        <option value="ANRF">ANRF</option>
+                        <option value="SERB">SERB</option>
+                        <option value="OTHER">OTHER</option>
+                    </select>
+                    <input type="text" class="auto-cap hidden" placeholder="Specify sponsor">
+                </td>
+                <td><input type="date" onchange="updateTrainDuration(this)"></td>
+                <td><input type="date" onchange="updateTrainDuration(this)"></td>
+                <td><input type="text" readonly placeholder="Auto-calculated"></td>
+                <td><input type="number" placeholder="No. of participants"></td>
+                <td><button type="button" class="btn btn-danger" onclick="deleteRow(this)">Delete</button></td>
+            `;
+        applyAutoCapitalize(row);
+      }
+
+      function handleSponsorSelect(select) {
+        const textInput = select.nextElementSibling;
+        if (select.value === "OTHER") {
+          textInput.classList.remove("hidden");
+          textInput.required = true;
+        } else {
+          textInput.classList.add("hidden");
+          textInput.required = false;
+          textInput.value = "";
+        }
+      }
+
+      function updateTrainDuration(input) {
+        const row = input.closest("tr");
+        const startDate = row.cells[3].querySelector("input").value;
+        const endDate = row.cells[4].querySelector("input").value;
+        const durationInput = row.cells[5].querySelector("input");
+        durationInput.value = calculateFullDuration(startDate, endDate);
+      }
+
+      // Delete row function
+      function deleteRow(btn) {
+        const row = btn.closest("tr");
+        row.remove();
+      }
+
+      // Apply auto-capitalize to new rows
+      function applyAutoCapitalize(row) {
+        row.querySelectorAll(".auto-cap").forEach((input) => {
+          autoCapitalize(input);
+        });
+      }
+
+      // Form submission - COMPLETE FIXED VERSION
+      document
+        .getElementById("scientistForm")
+        .addEventListener("submit", async function (e) {
+          e.preventDefault();
+
+          const alertBox = document.getElementById("alertBox");
+          const submitButton = document.querySelector('button[type="submit"]');
+
+          // Validate word count
+          const text = document.getElementById("res_highlight").value.trim();
+          const wordCount = text ? text.split(/\s+/).length : 0;
+          if (wordCount < 1 || wordCount > 500) {
+            showAlert(
+              "Research highlight must be between 300-500 words. Current: " +
+                wordCount +
+                " words.",
+              "error"
+            );
+            return;
+          }
+
+          // // Check if images are selected
+          // if (selectedFiles.length === 0) {
+          //   showAlert(
+          //     "Please upload at least one image for research findings.",
+          //     "error"
+          //   );
+          //   return;
+          // }
+
+          // Disable submit button
+          submitButton.disabled = true;
+          submitButton.textContent = "⏳ Uploading... Please wait";
+          submitButton.style.cursor = "not-allowed";
+
+          try {
+            // Convert images to base64
+            const imagePromises = selectedFiles.map((file) => {
+              return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () =>
+                  resolve({
+                    name: file.name,
+                    mimeType: file.type,
+                    data: reader.result.split(",")[1],
+                  });
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+              });
+            });
+
+            const images = await Promise.all(imagePromises);
+
+            // Collect form data
+            const formData = {
+              institute_name_short:
+                "ICAR-" + document.getElementById("institute_name").value,
+              scientist_name: document.getElementById("scientist_name").value,
+              month: document.getElementById("month").value,
+              year: document.getElementById("year").value,
+              h_ind_google: document.getElementById("h_ind_google").value,
+              h_ind_res_gate: document.getElementById("h_ind_res_gate").value,
+              num_cit_google: document.getElementById("num_cit_google").value,
+              num_cit_res_gate:
+                document.getElementById("num_cit_res_gate").value,
+              projects: getTableData("projectsBody"),
+              programs: getTableData("programsBody"),
+              ipr: getTableData("iprBody"),
+              tech_com: getTableData("techComBody"),
+              publications: getTableData("pubBody"),
+              training: getTableData("trainBody"),
+              res_highlight: document.getElementById("res_highlight").value,
+              images: images,
+              submission_timestamp: new Date().toISOString(),
+            };
+
+            console.log("Sending data to Google Sheets...");
+            console.log("Form Data:", formData);
+
+            // IMPORTANT: Replace YOUR_GOOGLE_SCRIPT_URL with your actual Web App URL
+            const SCRIPT_URL =
+              "https://script.google.com/macros/s/AKfycbxThXne3tnbG50IW0LRlmHQ9hiTTcgp-KDMhd20BTwLIbYSEo1oE0AHJtzTO7dV3xyT3A/exec";
+
+            // Send to Google Sheets
+            const response = await fetch(SCRIPT_URL, {
+              method: "POST",
+              mode: "no-cors",
+              cache: "no-cache",
+              headers: {
+                "Content-Type": "text/plain",
+              },
+              redirect: "follow",
+              body: JSON.stringify(formData),
+            });
+
+            // With no-cors mode, we can't read the response
+            // But if we reach here without error, the request was sent
+            console.log("Request sent successfully!");
+
+            showAlert("Data submitted successfully!", "success");
+
+            // Reset form after 2 seconds
+            setTimeout(() => {
+              resetForm();
+            }, 2000);
+          } catch (error) {
+            console.error("Submission Error:", error);
+            showAlert(
+              "❌ Error: " +
+                error.message +
+                ". Please check console and try again.",
+              "error"
+            );
+          } finally {
+            // Re-enable submit button after 3 seconds
+            setTimeout(() => {
+              submitButton.disabled = false;
+              submitButton.textContent = "Submit";
+              submitButton.style.cursor = "pointer";
+            }, 3000);
+          }
+        });
+
+      // Reset form function
+      function resetForm() {
+        // Reset the form
+        document.getElementById("scientistForm").reset();
+
+        // Clear all table bodies
+        document.getElementById("projectsBody").innerHTML = "";
+        document.getElementById("programsBody").innerHTML = "";
+        document.getElementById("iprBody").innerHTML = "";
+        document.getElementById("techComBody").innerHTML = "";
+        document.getElementById("pubBody").innerHTML = "";
+        document.getElementById("trainBody").innerHTML = "";
+
+        // Reset counters
+        projectCounter = 0;
+        programCounter = 0;
+        iprCounter = 0;
+        techComCounter = 0;
+        pubCounter = 0;
+        trainCounter = 0;
+
+        // Reset image preview
+        selectedFiles = [];
+        document.getElementById("imagePreviewContainer").style.display = "none";
+        document.getElementById("imagePreviewGrid").innerHTML = "";
+
+        // Reset word count
+        document.getElementById("wordCount").textContent = "0";
+
+        // Re-initialize tables with one row each
+        addProjectRow();
+        addProgramRow();
+        addIPRRow();
+        addTechComRow();
+        addPubRow();
+        addTrainRow();
+
+        // Scroll to top
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+
+      // Get table data - Only include rows with actual data
+      function getTableData(tbodyId) {
+        const tbody = document.getElementById(tbodyId);
+        const rows = tbody.querySelectorAll("tr");
+        const data = [];
+
+        rows.forEach((row) => {
+          const rowData = {};
+          const cells = row.cells;
+
+          // Check if row has any data (skip if all inputs are empty)
+          let hasData = false;
+
+          for (let i = 1; i < cells.length - 1; i++) {
+            // Skip S.No. (0) and Action column (last)
+            const inputs = cells[i].querySelectorAll("input, select, textarea");
+
+            if (inputs.length === 1) {
+              if (inputs[0].value && inputs[0].value.trim() !== "") {
+                hasData = true;
+                rowData[`col_${i}`] = inputs[0].value;
+              } else {
+                rowData[`col_${i}`] = "";
+              }
+            } else if (inputs.length > 1) {
+              // Handle cases with multiple inputs (like select + text)
+              const select = cells[i].querySelector("select");
+              const text = cells[i].querySelector('input[type="text"]');
+
+              if (select && text && !text.classList.contains("hidden")) {
+                if (text.value && text.value.trim() !== "") {
+                  hasData = true;
+                  rowData[`col_${i}`] = text.value;
+                } else {
+                  rowData[`col_${i}`] = "";
+                }
+              } else if (select && select.value) {
+                hasData = true;
+                rowData[`col_${i}`] = select.value;
+              } else {
+                rowData[`col_${i}`] = "";
+              }
+            }
+          }
+
+          // Only add row if it has actual data
+          if (hasData) {
+            // Add serial number only if row has data
+            rowData["col_0"] = cells[0].textContent;
+            data.push(rowData);
+          }
+        });
+
+        return data;
+      }
+
+      // Show alert message
+      function showAlert(message, type) {
+        const alertBox = document.getElementById("alertBox");
+        alertBox.textContent = message;
+        alertBox.className = "alert alert-" + type;
+        alertBox.style.display = "block";
+
+        setTimeout(() => {
+          alertBox.style.display = "none";
+        }, 5000);
+
+        // Scroll to top to show alert
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+
+      // Initialize with one row for each table
+      addProjectRow();
+      addProgramRow();
+      addIPRRow();
+      addTechComRow();
+      addPubRow();
+      addTrainRow();
+    </script>
+  </body>
+</html>
