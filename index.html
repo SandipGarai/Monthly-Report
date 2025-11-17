@@ -658,9 +658,7 @@
         });
       }
 
-      // Apply auto-capitalize to relevant fields
-      autoCapitalize(document.getElementById("institute_name"));
-      autoCapitalize(document.getElementById("scientist_name"));
+      // Only remove special characters during typing, NO auto-capitalize
       removeSpecialChars(document.getElementById("scientist_name"));
 
       // Word count for research highlight
@@ -670,7 +668,7 @@
           const text = this.value.trim();
           const words = text ? text.split(/\s+/).length : 0;
           document.getElementById("wordCount").textContent = words;
-          autoCapitalize(this);
+          // NO auto-capitalize here - only during save
         });
 
       // Image preview functionality
@@ -791,7 +789,6 @@
                 <td><input type="number" placeholder="Budget"></td>
                 <td><button type="button" class="btn btn-danger" onclick="deleteRow(this)">Delete</button></td>
             `;
-        applyAutoCapitalize(row);
       }
 
       function handleAgencySelect(select) {
@@ -807,10 +804,10 @@
       }
 
       function checkProjectNA(input) {
-        input.value = input.value.toUpperCase();
+        // Check for NA without capitalizing during typing
         const row = input.closest("tr");
         const inputs = row.querySelectorAll("input, select");
-        if (input.value === "NA") {
+        if (input.value.toUpperCase() === "NA") {
           inputs.forEach((el, idx) => {
             if (idx > 1) el.disabled = true;
           });
@@ -852,7 +849,6 @@
                 <td><input type="text" class="auto-cap" placeholder="Venue"></td>
                 <td><button type="button" class="btn btn-danger" onclick="deleteRow(this)">Delete</button></td>
             `;
-        applyAutoCapitalize(row);
       }
 
       function handleProgramSelect(select) {
@@ -897,7 +893,6 @@
                 <td><input type="text" class="auto-cap" placeholder="Registration No."></td>
                 <td><button type="button" class="btn btn-danger" onclick="deleteRow(this)">Delete</button></td>
             `;
-        applyAutoCapitalize(row);
       }
 
       // Add Tech Commercialization Row
@@ -922,7 +917,6 @@
                 <td><input type="number" placeholder="License Fee"></td>
                 <td><button type="button" class="btn btn-danger" onclick="deleteRow(this)">Delete</button></td>
             `;
-        applyAutoCapitalize(row);
       }
 
       // Add Publication Row
@@ -982,7 +976,6 @@
                 <td><input type="number" placeholder="No. of participants"></td>
                 <td><button type="button" class="btn btn-danger" onclick="deleteRow(this)">Delete</button></td>
             `;
-        applyAutoCapitalize(row);
       }
 
       function handleSponsorSelect(select) {
@@ -1072,11 +1065,14 @@
 
             const images = await Promise.all(imagePromises);
 
-            // Collect form data
+            // Collect form data and capitalize during save
             const formData = {
               institute_name_short:
-                "ICAR-" + document.getElementById("institute_name").value,
-              scientist_name: document.getElementById("scientist_name").value,
+                "ICAR-" +
+                document.getElementById("institute_name").value.toUpperCase(),
+              scientist_name: document
+                .getElementById("scientist_name")
+                .value.toUpperCase(),
               month: document.getElementById("month").value,
               year: document.getElementById("year").value,
               h_ind_google: document.getElementById("h_ind_google").value,
@@ -1084,23 +1080,40 @@
               num_cit_google: document.getElementById("num_cit_google").value,
               num_cit_res_gate:
                 document.getElementById("num_cit_res_gate").value,
-              projects: getTableData("projectsBody"),
-              programs: getTableData("programsBody"),
-              ipr: getTableData("iprBody"),
-              tech_com: getTableData("techComBody"),
-              publications: getTableData("pubBody"),
-              training: getTableData("trainBody"),
-              res_highlight: document.getElementById("res_highlight").value,
+              projects: capitalizeTableData(getTableData("projectsBody")),
+              programs: capitalizeTableData(getTableData("programsBody")),
+              ipr: capitalizeTableData(getTableData("iprBody")),
+              tech_com: capitalizeTableData(getTableData("techComBody")),
+              publications: getTableData("pubBody"), // Don't capitalize publications (APA format)
+              training: capitalizeTableData(getTableData("trainBody")),
+              res_highlight: document
+                .getElementById("res_highlight")
+                .value.toUpperCase(),
               images: images,
               submission_timestamp: new Date().toISOString(),
             };
+
+            // Capitalize table data before sending
+            function capitalizeTableData(tableData) {
+              return tableData.map((row) => {
+                const capitalizedRow = {};
+                for (const key in row) {
+                  if (typeof row[key] === "string") {
+                    capitalizedRow[key] = row[key].toUpperCase();
+                  } else {
+                    capitalizedRow[key] = row[key];
+                  }
+                }
+                return capitalizedRow;
+              });
+            }
 
             console.log("Sending data to Google Sheets...");
             console.log("Form Data:", formData);
 
             // IMPORTANT: Replace YOUR_GOOGLE_SCRIPT_URL with your actual Web App URL
             const SCRIPT_URL =
-              "https://script.google.com/macros/s/AKfycbxThXne3tnbG50IW0LRlmHQ9hiTTcgp-KDMhd20BTwLIbYSEo1oE0AHJtzTO7dV3xyT3A/exec";
+              "https://script.google.com/macros/s/AKfycbyPqAvRvaIySBl_7drMn18LSgZroehaKt5F8c1dd34Zxov3BIE5x__06rgdrFdZS4rYfQ/exec";
 
             // Send to Google Sheets
             const response = await fetch(SCRIPT_URL, {
