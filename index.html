@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Scientist Data Collection Form — Final</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
       /* -----------------------------
          Basic Reset & Layout
@@ -1366,7 +1367,213 @@
 
             showAlert("Data submitted successfully!", "success");
             localStorage.removeItem(DRAFT_KEY);
-            setTimeout(() => resetForm(true), 1200);
+
+            /* ADD TEMP DOWNLOAD BUTTON */
+            const dlBtn = document.createElement("button");
+            dlBtn.textContent = "Download Submitted Report";
+            dlBtn.className = "btn btn-secondary";
+            dlBtn.style.marginTop = "12px";
+            dlBtn.style.display = "block";
+            document.getElementById("alertBox").after(dlBtn);
+
+            dlBtn.addEventListener("click", async () => {
+              /* ---------- 1) DOWNLOAD JSON ---------- */
+              const jsonBlob = new Blob([JSON.stringify(payload, null, 2)], {
+                type: "application/json",
+              });
+              const jsonUrl = URL.createObjectURL(jsonBlob);
+              const aJson = document.createElement("a");
+              aJson.href = jsonUrl;
+              aJson.download = `Scientist_Report_${payload.scientist_name}_${payload.month}_${payload.year}.json`;
+              aJson.click();
+              URL.revokeObjectURL(jsonUrl);
+
+              /* ---------- 2) PREPARE PDF ---------- */
+              const { jsPDF } = window.jspdf;
+              const pdf = new jsPDF({ unit: "pt", format: "a4" });
+
+              let y = 40;
+              const spacing = 18;
+              const pageHeight = pdf.internal.pageSize.height;
+
+              pdf.setFont("Helvetica", "bold");
+              pdf.setFontSize(18);
+              pdf.text(
+                `Monthly Report of ${payload.scientist_name} (${payload.month}, ${payload.year})`,
+                40,
+                y
+              );
+              y += 30;
+
+              /* ---------- BASIC INFORMATION ---------- */
+              pdf.setFont("Helvetica", "normal");
+              pdf.setFontSize(12);
+
+              const topInfo = [
+                `Scientist: ${payload.scientist_name}`,
+                `Institute: ${payload.institute_name_short}`,
+                `Month: ${payload.month}`,
+                `Year: ${payload.year}`,
+                `Google Scholar H-index: ${payload.h_ind_google}`,
+                `ResearchGate H-index: ${payload.h_ind_res_gate}`,
+                `Google Scholar Citations: ${payload.num_cit_google}`,
+                `ResearchGate Citations: ${payload.num_cit_res_gate}`,
+              ];
+
+              topInfo.forEach((t) => {
+                pdf.text(t, 40, y);
+                y += spacing;
+              });
+
+              y += 20;
+
+              /* ---------- TABLE PDF HELPER ---------- */
+              function pdfTableSection(title, tableData) {
+                if (!tableData || tableData.length === 0) return;
+
+                pdf.setFont("Helvetica", "bold");
+                pdf.setFontSize(14);
+                if (y > pageHeight - 50) {
+                  pdf.addPage();
+                  y = 40;
+                }
+                pdf.text(title, 40, y);
+                y += 25;
+
+                pdf.setFont("Helvetica", "normal");
+                pdf.setFontSize(11);
+
+                tableData.forEach((row, index) => {
+                  if (y > pageHeight - 60) {
+                    pdf.addPage();
+                    y = 40;
+                  }
+
+                  pdf.text(`${index + 1}.`, 40, y);
+
+                  let rowText = [];
+                  for (const key in row) {
+                    if (key !== "col_0" && row[key].trim() !== "") {
+                      rowText.push(`${row[key]}`);
+                    }
+                  }
+
+                  const wrapped = pdf.splitTextToSize(rowText.join("; "), 500);
+                  wrapped.forEach((w) => {
+                    if (y > pageHeight - 50) {
+                      pdf.addPage();
+                      y = 40;
+                    }
+                    pdf.text(w, 60, y);
+                    y += spacing;
+                  });
+
+                  y += 5;
+                });
+
+                y += 20;
+              }
+
+              /* ---------- ADD TABLES TO PDF ---------- */
+              pdfTableSection("Externally Funded Projects", payload.projects);
+              pdfTableSection("Programs Organized", payload.programs);
+              pdfTableSection("IPR Generated", payload.ipr);
+              pdfTableSection("Technology Commercialization", payload.tech_com);
+              pdfTableSection("Publications", payload.publications);
+              pdfTableSection("Training Conducted", payload.training);
+
+              /* ---------- RESEARCH HIGHLIGHT ---------- */
+              pdf.setFont("Helvetica", "bold");
+              pdf.setFontSize(14);
+              pdf.text("Significant Research Findings", 40, y);
+              y += 25;
+
+              pdf.setFont("Helvetica", "normal");
+              const rhLines = pdf.splitTextToSize(payload.res_highlight, 520);
+              rhLines.forEach((line) => {
+                if (y > pageHeight - 50) {
+                  pdf.addPage();
+                  y = 40;
+                }
+                pdf.text(line, 40, y);
+                y += spacing;
+              });
+
+              y += 20;
+
+              /* ---------------------------------------------------
+                IMAGE INSERTION SECTION
+               --------------------------------------------------- */
+              if (payload.images && payload.images.length > 0) {
+                pdf.setFont("Helvetica", "bold");
+                pdf.setFontSize(14);
+                if (y > pageHeight - 100) {
+                  pdf.addPage();
+                  y = 40;
+                }
+
+                pdf.text("Figures Uploaded", 40, y);
+                y += 30;
+
+                pdf.setFont("Helvetica", "normal");
+                pdf.setFontSize(11);
+
+                for (let i = 0; i < payload.images.length; i++) {
+                  const img = payload.images[i];
+
+                  // Convert base64 to data URL
+                  const imgData = `data:${img.type};base64,${img.data}`;
+
+                  // Image display max size
+                  const maxWidth = 450;
+                  const maxHeight = 300;
+
+                  // Load image to get natural size
+                  const tempImg = new Image();
+                  tempImg.src = imgData;
+
+                  await new Promise((resolve) => {
+                    tempImg.onload = () => {
+                      let imgWidth = tempImg.width;
+                      let imgHeight = tempImg.height;
+
+                      // Scale down while preserving aspect ratio
+                      const widthRatio = maxWidth / imgWidth;
+                      const heightRatio = maxHeight / imgHeight;
+                      const scale = Math.min(widthRatio, heightRatio, 1);
+
+                      imgWidth *= scale;
+                      imgHeight *= scale;
+
+                      // Page break if needed
+                      if (y + imgHeight + 80 > pageHeight) {
+                        pdf.addPage();
+                        y = 40;
+                      }
+
+                      // Draw image
+                      pdf.addImage(imgData, "JPEG", 40, y, imgWidth, imgHeight);
+                      y += imgHeight + 10;
+
+                      // Caption
+                      pdf.text(`Figure ${i + 1}: ${img.name}`, 40, y);
+                      y += 30;
+
+                      resolve();
+                    };
+                  });
+                }
+              }
+
+              /* ---------- SAVE PDF ---------- */
+              pdf.save(
+                `Scientist_Report_${payload.scientist_name}_${payload.month}_${payload.year}.pdf`
+              );
+
+              /* Clean Up */
+              dlBtn.remove();
+              resetForm(true);
+            });
           } catch (err) {
             console.error("Submit error:", err);
             showAlert("❌ Submission error: " + (err.message || err), "error");
