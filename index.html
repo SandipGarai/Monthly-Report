@@ -4,7 +4,12 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Scientist Data Collection Form — Final</title>
+    <!-- PDF generation -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <!-- ZIP creation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
+
     <style>
       /* -----------------------------
          Basic Reset & Layout
@@ -1368,25 +1373,23 @@
 
             /* ADD TEMP DOWNLOAD BUTTON */
             const dlBtn = document.createElement("button");
-            dlBtn.textContent = "Download Submitted Report (JSON+PDF)";
+            dlBtn.textContent = "Download Submitted Report";
             dlBtn.className = "btn btn-secondary";
             dlBtn.style.marginTop = "12px";
             dlBtn.style.display = "block";
             document.getElementById("alertBox").after(dlBtn);
 
             dlBtn.addEventListener("click", async () => {
-              /* ---------- 1) DOWNLOAD JSON ---------- */
-              const jsonBlob = new Blob([JSON.stringify(payload, null, 2)], {
-                type: "application/json",
-              });
-              const jsonUrl = URL.createObjectURL(jsonBlob);
-              const aJson = document.createElement("a");
-              aJson.href = jsonUrl;
-              aJson.download = `Scientist_Report_${payload.scientist_name}_${payload.month}_${payload.year}.json`;
-              aJson.click();
-              URL.revokeObjectURL(jsonUrl);
+              const zip = new JSZip();
 
-              /* ---------- 2) PREPARE PDF ---------- */
+              /* ------------ 1) ADD JSON ------------ */
+              const jsonData = JSON.stringify(payload, null, 2);
+              zip.file(
+                `Scientist_Report_${payload.scientist_name}_${payload.month}_${payload.year}.json`,
+                jsonData
+              );
+
+              /* ------------ 2) GENERATE PDF ------------ */
               const { jsPDF } = window.jspdf;
               const pdf = new jsPDF({ unit: "pt", format: "a4" });
 
@@ -1403,11 +1406,10 @@
               );
               y += 30;
 
-              /* ---------- BASIC INFORMATION ---------- */
+              /* Basic Info */
               pdf.setFont("Helvetica", "normal");
               pdf.setFontSize(12);
-
-              const topInfo = [
+              const info = [
                 `Scientist: ${payload.scientist_name}`,
                 `Institute: ${payload.institute_name_short}`,
                 `Month: ${payload.month}`,
@@ -1417,46 +1419,45 @@
                 `Google Scholar Citations: ${payload.num_cit_google}`,
                 `ResearchGate Citations: ${payload.num_cit_res_gate}`,
               ];
-
-              topInfo.forEach((t) => {
+              info.forEach((t) => {
                 pdf.text(t, 40, y);
                 y += spacing;
               });
-
               y += 20;
 
-              /* ---------- TABLE PDF HELPER ---------- */
-              function pdfTableSection(title, tableData) {
-                if (!tableData || tableData.length === 0) return;
+              /* TABLES FUNCTION */
+              function addSection(title, data) {
+                if (!data || data.length === 0) return;
 
                 pdf.setFont("Helvetica", "bold");
                 pdf.setFontSize(14);
+
                 if (y > pageHeight - 50) {
                   pdf.addPage();
                   y = 40;
                 }
+
                 pdf.text(title, 40, y);
                 y += 25;
 
                 pdf.setFont("Helvetica", "normal");
                 pdf.setFontSize(11);
 
-                tableData.forEach((row, index) => {
+                data.forEach((row, idx) => {
                   if (y > pageHeight - 60) {
                     pdf.addPage();
                     y = 40;
                   }
 
-                  pdf.text(`${index + 1}.`, 40, y);
+                  pdf.text(`${idx + 1}.`, 40, y);
 
-                  let rowText = [];
-                  for (const key in row) {
-                    if (key !== "col_0" && row[key].trim() !== "") {
-                      rowText.push(`${row[key]}`);
-                    }
-                  }
+                  const text = Object.keys(row)
+                    .filter((k) => k !== "col_0" && row[k].trim() !== "")
+                    .map((k) => row[k])
+                    .join("; ");
 
-                  const wrapped = pdf.splitTextToSize(rowText.join("; "), 500);
+                  const wrapped = pdf.splitTextToSize(text, 500);
+
                   wrapped.forEach((w) => {
                     if (y > pageHeight - 50) {
                       pdf.addPage();
@@ -1472,23 +1473,23 @@
                 y += 20;
               }
 
-              /* ---------- ADD TABLES TO PDF ---------- */
-              pdfTableSection("Externally Funded Projects", payload.projects);
-              pdfTableSection("Programs Organized", payload.programs);
-              pdfTableSection("IPR Generated", payload.ipr);
-              pdfTableSection("Technology Commercialization", payload.tech_com);
-              pdfTableSection("Publications", payload.publications);
-              pdfTableSection("Training Conducted", payload.training);
+              /* Add all tables */
+              addSection("Externally Funded Projects", payload.projects);
+              addSection("Programs Organized", payload.programs);
+              addSection("IPR Generated", payload.ipr);
+              addSection("Technology Commercialization", payload.tech_com);
+              addSection("Publications", payload.publications);
+              addSection("Training Conducted", payload.training);
 
-              /* ---------- RESEARCH HIGHLIGHT ---------- */
+              /* Research Highlight */
               pdf.setFont("Helvetica", "bold");
               pdf.setFontSize(14);
               pdf.text("Significant Research Findings", 40, y);
               y += 25;
 
               pdf.setFont("Helvetica", "normal");
-              const rhLines = pdf.splitTextToSize(payload.res_highlight, 520);
-              rhLines.forEach((line) => {
+              const rhText = pdf.splitTextToSize(payload.res_highlight, 520);
+              rhText.forEach((line) => {
                 if (y > pageHeight - 50) {
                   pdf.addPage();
                   y = 40;
@@ -1496,64 +1497,40 @@
                 pdf.text(line, 40, y);
                 y += spacing;
               });
-
               y += 20;
 
-              /* ---------------------------------------------------
-                IMAGE INSERTION SECTION
-               --------------------------------------------------- */
+              /* ------------ ADD IMAGES ------------ */
               if (payload.images && payload.images.length > 0) {
                 pdf.setFont("Helvetica", "bold");
                 pdf.setFontSize(14);
-                if (y > pageHeight - 100) {
-                  pdf.addPage();
-                  y = 40;
-                }
-
                 pdf.text("Figures Uploaded", 40, y);
                 y += 30;
 
-                pdf.setFont("Helvetica", "normal");
-                pdf.setFontSize(11);
-
                 for (let i = 0; i < payload.images.length; i++) {
                   const img = payload.images[i];
-
-                  // Convert base64 to data URL
                   const imgData = `data:${img.type};base64,${img.data}`;
 
-                  // Image display max size
-                  const maxWidth = 450;
-                  const maxHeight = 300;
-
-                  // Load image to get natural size
-                  const tempImg = new Image();
-                  tempImg.src = imgData;
+                  const temp = new Image();
+                  temp.src = imgData;
 
                   await new Promise((resolve) => {
-                    tempImg.onload = () => {
-                      let imgWidth = tempImg.width;
-                      let imgHeight = tempImg.height;
+                    temp.onload = () => {
+                      const maxW = 450,
+                        maxH = 300;
+                      let w = temp.width,
+                        h = temp.height;
 
-                      // Scale down while preserving aspect ratio
-                      const widthRatio = maxWidth / imgWidth;
-                      const heightRatio = maxHeight / imgHeight;
-                      const scale = Math.min(widthRatio, heightRatio, 1);
+                      const scale = Math.min(maxW / w, maxH / h, 1);
+                      w *= scale;
+                      h *= scale;
 
-                      imgWidth *= scale;
-                      imgHeight *= scale;
-
-                      // Page break if needed
-                      if (y + imgHeight + 80 > pageHeight) {
+                      if (y + h + 60 > pageHeight) {
                         pdf.addPage();
                         y = 40;
                       }
 
-                      // Draw image
-                      pdf.addImage(imgData, "JPEG", 40, y, imgWidth, imgHeight);
-                      y += imgHeight + 10;
-
-                      // Caption
+                      pdf.addImage(imgData, "JPEG", 40, y, w, h);
+                      y += h + 10;
                       pdf.text(`Figure ${i + 1}: ${img.name}`, 40, y);
                       y += 30;
 
@@ -1563,12 +1540,21 @@
                 }
               }
 
-              /* ---------- SAVE PDF ---------- */
-              pdf.save(
-                `Scientist_Report_${payload.scientist_name}_${payload.month}_${payload.year}.pdf`
-              );
+              /* Convert PDF to Blob and add to ZIP */
+              const pdfBlob = pdf.output("blob");
+              const pdfName = `Scientist_Report_${payload.scientist_name}_${payload.month}_${payload.year}.pdf`;
+              zip.file(pdfName, pdfBlob);
 
-              /* Clean Up */
+              /* ------------ 3) GENERATE ZIP ------------ */
+              const zipBlob = await zip.generateAsync({ type: "blob" });
+
+              const zipName = `Scientist_Report_${payload.scientist_name}_${payload.month}_${payload.year}.zip`;
+
+              const a = document.createElement("a");
+              a.href = URL.createObjectURL(zipBlob);
+              a.download = zipName;
+              a.click();
+
               dlBtn.remove();
               resetForm(true);
             });
