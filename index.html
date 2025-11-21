@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Scientist Data Collection Form — Final</title>
+    <title>Monthly Rrport Form</title>
     <!-- PDF generation -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
@@ -304,49 +304,12 @@
       .readonly-field {
         background: #e9ecef;
       }
-      /* Blinking Monthly Report Button */
-      .blink-btn {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        padding: 8px 14px;
-        background: #ff5722;
-        color: white;
-        border-radius: 8px;
-        font-weight: 600;
-        cursor: pointer;
-        text-decoration: none;
-        animation: blink 1.2s infinite;
-        border: 2px solid #e64a19;
-        font-size: 0.9rem;
-      }
-
-      @keyframes blink {
-        50% {
-          opacity: 0.4;
-        }
-      }
-
-      /* Position inside white container */
-      .header-right-btn {
-        position: absolute;
-        right: 20px;
-        top: 15px;
-        z-index: 10;
-      }
     </style>
   </head>
   <body>
     <div class="container">
-      <h1>Scientists' Data Collection Form</h1>
-      <!-- BUTTON ADDED HERE -->
-      <a
-        href="https://sandipgarai.github.io/Monthly-Report/"
-        target="_blank"
-        class="blink-btn header-right-btn"
-      >
-        Submit Monthly Report
-      </a>
+      <h1>Monthly Report Form</h1>
+
       <p class="subtitle">ICAR Institute Research Information System</p>
 
       <div id="alertBox" class="alert"></div>
