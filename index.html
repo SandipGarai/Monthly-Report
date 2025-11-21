@@ -304,6 +304,16 @@
       .readonly-field {
         background: #e9ecef;
       }
+      .blink-caution {
+        color: red; /* Sets the text color to red */
+        animation: blinker 1s step-end infinite; /* 1 second duration, infinite loop */
+      }
+
+      @keyframes blinker {
+        75% {
+          opacity: 0; /* At 50% of the animation cycle, the text becomes invisible */
+        }
+      }
     </style>
   </head>
   <body>
@@ -372,7 +382,6 @@
             <div class="form-group">
               <label for="month">Month*</label>
               <select id="month" required>
-                <option value="">Select Month</option>
                 <option>January</option>
                 <option>February</option>
                 <option>March</option>
@@ -386,6 +395,11 @@
                 <option>November</option>
                 <option>December</option>
               </select>
+              <small class="small">
+                <strong class="blink-caution">
+                  Caution: Input should be provided for selected month only
+                </strong>
+              </small>
             </div>
 
             <div class="form-group">
@@ -731,12 +745,34 @@
          ------------------------- */
       const yearSelect = document.getElementById("year");
       const currentYear = new Date().getFullYear();
-      for (let y = currentYear; y >= currentYear - 10; y--) {
+      for (let y = currentYear; y >= currentYear - 5; y--) {
         const opt = document.createElement("option");
         opt.value = y;
         opt.textContent = y;
         yearSelect.appendChild(opt);
       }
+      /* -------------------------
+         Set default month = previous month
+         ------------------------- */
+      (function setDefaultMonth() {
+        const monthSelect = document.getElementById("month");
+        const now = new Date();
+
+        let prevMonthIndex = now.getMonth() - 1; // 0 = Jan, 11 = Dec
+
+        if (prevMonthIndex < 0) {
+          // If current month is January, default to December
+          prevMonthIndex = 11;
+          // Also set year to previous year
+          document.getElementById("year").value = now.getFullYear() - 1;
+        } else {
+          // Otherwise, set current year as usual
+          document.getElementById("year").value = now.getFullYear();
+        }
+
+        // Set default month
+        monthSelect.selectedIndex = prevMonthIndex;
+      })();
 
       // small utilities
       function showAlert(message, type = "success") {
