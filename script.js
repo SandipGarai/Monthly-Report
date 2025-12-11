@@ -44,6 +44,26 @@ for (let y = currentYear; y >= currentYear - 5; y--) {
 
   monthSelect.selectedIndex = prevMonthIndex;
 })();
+/* -------------------------
+          DYNAMIC CAUTION TEXT
+        ------------------------- */
+function updateCautionText() {
+  const selectedMonth = document.getElementById("month").value;
+
+  // current month name
+  const now = new Date();
+  const currentMonth = now.toLocaleString("default", { month: "long" });
+
+  document.getElementById(
+    "dynamicCaution"
+  ).textContent = `⚠️ Input should be provided for 15th of ${selectedMonth} – 15th of ${currentMonth} only`;
+}
+
+// Update on page load
+updateCautionText();
+
+// Update when user changes month
+document.getElementById("month").addEventListener("change", updateCautionText);
 
 /* -------------------------
    Small utilities
@@ -1068,4 +1088,3 @@ function initializeTables() {
 }
 
 initializeTables();
-
