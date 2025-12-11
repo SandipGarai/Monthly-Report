@@ -806,7 +806,7 @@ document
       console.log("Payload ready:", payload);
 
       const SCRIPT_URL =
-        "https://script.google.com/macros/s/AKfycbxSxyFgSzwgiRiDQQj8uk6DTabsJc8NArZ7kHfg4kMMJXYHsYqCVFDS2V8nCGbeyHlrbA/exec";
+        "https://script.google.com/macros/s/AKfycbyb79si_OUvB5JQ2jBsqJ0p6tHFko_7dEqsogrrtckIqezPR9ANmEoXAWB0rQT5rIZx9A/exec";
 
       await fetch(SCRIPT_URL, {
         method: "POST",
@@ -1068,3 +1068,4 @@ function initializeTables() {
 }
 
 initializeTables();
+
