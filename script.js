@@ -90,6 +90,10 @@ function updatePeriodWarning() {
 
 periodSelect.addEventListener("change", updatePeriodWarning);
 
+yearSelect.addEventListener("change", () => {
+  updatePeriodWarning();
+});
+
 /* -------------------------
    Small utilities
    ------------------------- */
