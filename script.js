@@ -30,6 +30,8 @@ for (let y = currentYear; y >= currentYear - 5; y--) {
   opt.textContent = y;
   yearSelect.appendChild(opt);
 }
+yearSelect.disabled = true;
+
 function populatePeriods() {
   const now = new Date();
   const currentMonthIndex = now.getMonth(); // 0 = Jan
@@ -50,7 +52,16 @@ function populatePeriods() {
   }
 }
 function getSelectedPeriodInfo() {
+  if (!periodSelect.value) {
+    return {
+      periodMonth: "",
+      periodYear: "",
+      periodRange: "",
+    };
+  }
+
   const [monthName, yearStr] = periodSelect.value.split("|");
+
   const year = Number(yearStr);
 
   const monthIndex = new Date(`${monthName} 1, ${year}`).getMonth();
@@ -72,7 +83,6 @@ function getSelectedPeriodInfo() {
 }
 function updatePeriodWarning() {
   const p = getSelectedPeriodInfo();
-
   cautionEl.textContent = `⚠️ Input should be provided for ${p.periodRange} only`;
 
   yearSelect.value = p.periodYear;
@@ -620,6 +630,7 @@ function clearDraft() {
 }
 
 async function collectDraftData() {
+  const p = getSelectedPeriodInfo();
   const tables = {
     projects: getTableData("projectsBody"),
     programs: getTableData("programsBody"),
@@ -671,8 +682,11 @@ async function restoreDraft(data) {
   document.getElementById("institute_name").value =
     data.institute_name || "IIAB";
   document.getElementById("scientist_name").value = data.scientist_name || "";
-  document.getElementById("month").value = data.month || "";
-  document.getElementById("year").value = data.year || "";
+  if (data.month && data.year) {
+    periodSelect.value = `${data.month}|${data.year}`;
+    updatePeriodWarning();
+  }
+
   document.getElementById("h_ind_google").value = data.h_ind_google || "";
   document.getElementById("h_ind_res_gate").value = data.h_ind_res_gate || "";
   document.getElementById("num_cit_google").value = data.num_cit_google || "";
@@ -785,7 +799,7 @@ document
     const wc = text ? text.split(/\s+/).length : 0;
     if (wc < 1 || wc > 500) {
       showAlert(
-        "Research highlight must be between 300-500 words. Current: " +
+        "Research highlight must be between 1-500 words. Current: " +
           wc +
           " words.",
         "error",
