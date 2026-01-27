@@ -21,49 +21,64 @@ function toggleSection(sectionName) {
    ------------------------- */
 const yearSelect = document.getElementById("year");
 const currentYear = new Date().getFullYear();
+const periodSelect = document.getElementById("period");
+const cautionEl = document.getElementById("dynamicCaution");
+
 for (let y = currentYear; y >= currentYear - 5; y--) {
   const opt = document.createElement("option");
   opt.value = y;
   opt.textContent = y;
   yearSelect.appendChild(opt);
 }
-
-/* Set default month = previous month */
-(function setDefaultMonth() {
-  const monthSelect = document.getElementById("month");
+function populatePeriods() {
   const now = new Date();
+  const currentMonthIndex = now.getMonth(); // 0 = Jan
+  const currentYear = now.getFullYear();
 
-  let prevMonthIndex = now.getMonth() - 1; // 0 = Jan, 11 = Dec
+  periodSelect.innerHTML = "";
 
-  if (prevMonthIndex < 0) {
-    prevMonthIndex = 11;
-    document.getElementById("year").value = now.getFullYear() - 1;
-  } else {
-    document.getElementById("year").value = now.getFullYear();
+  // Allow CURRENT and PREVIOUS period only
+  for (let i = 0; i < 2; i++) {
+    const d = new Date(currentYear, currentMonthIndex - i, 1);
+    const monthName = d.toLocaleString("default", { month: "long" });
+    const year = d.getFullYear();
+
+    const opt = document.createElement("option");
+    opt.value = `${monthName}|${year}`;
+    opt.textContent = `${monthName} ${year}`;
+    periodSelect.appendChild(opt);
   }
+}
+function getSelectedPeriodInfo() {
+  const [monthName, yearStr] = periodSelect.value.split("|");
+  const year = Number(yearStr);
 
-  monthSelect.selectedIndex = prevMonthIndex;
-})();
-/* -------------------------
-          DYNAMIC CAUTION TEXT
-        ------------------------- */
-function updateCautionText() {
-  const selectedMonth = document.getElementById("month").value;
+  const monthIndex = new Date(`${monthName} 1, ${year}`).getMonth();
 
-  // current month name
-  const now = new Date();
-  const currentMonth = now.toLocaleString("default", { month: "long" });
+  const startDate = new Date(year, monthIndex - 1, 15);
+  const endDate = new Date(year, monthIndex, 15);
 
-  document.getElementById(
-    "dynamicCaution"
-  ).textContent = `⚠️ Input should be provided for 15th of ${selectedMonth} – 15th of ${currentMonth} only`;
+  const startLabel = `15 ${startDate.toLocaleString("default", {
+    month: "long",
+  })} ${startDate.getFullYear()}`;
+
+  const endLabel = `15 ${monthName} ${year}`;
+
+  return {
+    periodMonth: monthName,
+    periodYear: year,
+    periodRange: `${startLabel} – ${endLabel}`,
+  };
+}
+function updatePeriodWarning() {
+  const p = getSelectedPeriodInfo();
+
+  cautionEl.textContent = `⚠️ Input should be provided for ${p.periodRange} only`;
+
+  yearSelect.value = p.periodYear;
 }
 
-// Update on page load
-updateCautionText();
-
-// Update when user changes month
-document.getElementById("month").addEventListener("change", updateCautionText);
+periodSelect.addEventListener("change", updatePeriodWarning);
 
 /* -------------------------
    Small utilities
@@ -618,8 +633,9 @@ async function collectDraftData() {
     smd_name: document.getElementById("smd_name").value || "",
     institute_name: document.getElementById("institute_name").value || "",
     scientist_name: document.getElementById("scientist_name").value || "",
-    month: document.getElementById("month").value || "",
-    year: document.getElementById("year").value || "",
+    month: p.periodMonth,
+    year: p.periodYear,
+    period_range: p.periodRange,
     h_ind_google: document.getElementById("h_ind_google").value || "",
     h_ind_res_gate: document.getElementById("h_ind_res_gate").value || "",
     num_cit_google: document.getElementById("num_cit_google").value || "",
@@ -643,6 +659,10 @@ window.addEventListener("load", async function () {
       console.error("Restore draft error:", err);
     }
   }
+});
+window.addEventListener("load", () => {
+  populatePeriods();
+  updatePeriodWarning();
 });
 
 async function restoreDraft(data) {
@@ -687,7 +707,7 @@ async function restoreDraft(data) {
   figures = Array.isArray(data.figures) ? data.figures : [];
   figureLocalCounter = figures.reduce(
     (max, f) => Math.max(max, f.localIndex || 0),
-    0
+    0,
   );
   renderAllFigureCards();
 }
@@ -768,7 +788,7 @@ document
         "Research highlight must be between 300-500 words. Current: " +
           wc +
           " words.",
-        "error"
+        "error",
       );
       return;
     }
@@ -784,15 +804,18 @@ document
         caption: f.caption,
         localIndex: f.localIndex,
       }));
-
+      const p = getSelectedPeriodInfo();
       const payload = {
         smd_name: document.getElementById("smd_name").value || "",
         institute_name_short:
           "ICAR-" +
           (document.getElementById("institute_name").value || "").toUpperCase(),
         scientist_name: document.getElementById("scientist_name").value || "",
-        month: document.getElementById("month").value || "",
-        year: document.getElementById("year").value || "",
+
+        month: p.periodMonth,
+        year: p.periodYear,
+        period_range: p.periodRange,
+
         h_ind_google: document.getElementById("h_ind_google").value || "",
         h_ind_res_gate: document.getElementById("h_ind_res_gate").value || "",
         num_cit_google: document.getElementById("num_cit_google").value || "",
@@ -840,7 +863,8 @@ document
 
       /* ADD TEMP DOWNLOAD BUTTON */
       const dlBtn = document.createElement("button");
-      dlBtn.textContent = "Download Submitted Report";
+      dlBtn.textContent =
+        "Click to Download Submitted Report (Then please clear the draft)";
       dlBtn.className = "btn btn-secondary";
       dlBtn.style.marginTop = "12px";
       dlBtn.style.display = "block";
@@ -853,7 +877,7 @@ document
         const jsonData = JSON.stringify(payload, null, 2);
         zip.file(
           `Scientist_Report_${payload.scientist_name}_${payload.month}_${payload.year}.json`,
-          jsonData
+          jsonData,
         );
 
         /* ------------ 2) GENERATE PDF ------------ */
@@ -869,7 +893,7 @@ document
         pdf.text(
           `Monthly Report of ${payload.scientist_name} (${payload.month}, ${payload.year})`,
           40,
-          y
+          y,
         );
         y += 30;
 
