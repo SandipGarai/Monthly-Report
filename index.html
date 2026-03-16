@@ -4,29 +4,19 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Monthly Report Form</title>
-
-    <!-- CSS -->
     <link rel="stylesheet" href="style.css" />
-
-    <!-- PDF generation -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
-    <!-- ZIP creation -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
   </head>
-
   <body>
     <div class="container">
       <h1>Monthly Report Form</h1>
       <p class="subtitle">ICAR Institute Research Information System</p>
-
       <div id="alertBox" class="alert"></div>
 
       <form id="scientistForm">
         <!-- BASIC INFO -->
         <div class="section">
           <h2 class="section-title">Basic Information</h2>
-
           <div class="form-group">
             <label for="smd_name">SMD Name</label>
             <input
@@ -39,7 +29,6 @@
               >If you wish to change SMD name, edit this field.</small
             >
           </div>
-
           <div class="form-group">
             <label for="institute_name">Institute Name Short*</label>
             <div style="display: flex; align-items: center">
@@ -65,25 +54,22 @@
               >Default: <strong>IIAB</strong> — you may change it.</small
             >
           </div>
-
           <div class="form-group">
             <label for="scientist_name">Scientist Name*</label>
             <input
               type="text"
               id="scientist_name"
               required
-              placeholder="Enter scientist name (no titles: e.g., Dr., Mr. etc.)"
+              placeholder="Enter scientist name (no titles)"
             />
           </div>
-
           <div class="two-column">
             <div class="form-group">
               <label for="period">Reporting Period*</label>
               <select id="period" required></select>
-
-              <small class="small">
-                <strong id="dynamicCaution" class="blink-caution"></strong>
-              </small>
+              <small class="small"
+                ><strong id="dynamicCaution" class="blink-caution"></strong
+              ></small>
             </div>
             <div class="form-group">
               <label for="year">Year*</label>
@@ -92,61 +78,23 @@
           </div>
         </div>
 
-        <!-- H-Index & Citations -->
-        <div class="section">
-          <h2 class="section-title">H-Index & Citations</h2>
-          <div class="two-column">
-            <div class="form-group">
-              <label for="h_ind_google">H-Index (Google Scholar)</label>
-              <input
-                type="number"
-                id="h_ind_google"
-                min="0"
-                placeholder="Enter H-Index"
-              />
-            </div>
-            <div class="form-group">
-              <label for="h_ind_res_gate">H-Index (Research Gate)</label>
-              <input
-                type="number"
-                id="h_ind_res_gate"
-                min="0"
-                placeholder="Enter H-Index"
-              />
-            </div>
-          </div>
-
-          <div class="two-column">
-            <div class="form-group">
-              <label for="num_cit_google">Citations (Google Scholar)</label>
-              <input
-                type="number"
-                id="num_cit_google"
-                min="0"
-                placeholder="Enter citations"
-              />
-            </div>
-            <div class="form-group">
-              <label for="num_cit_res_gate">Citations (Research Gate)</label>
-              <input
-                type="number"
-                id="num_cit_res_gate"
-                min="0"
-                placeholder="Enter citations"
-              />
-            </div>
-          </div>
+        <!-- H-Index hidden but preserved -->
+        <div id="hIndexSection" style="display: none">
+          <input type="number" id="h_ind_google" value="" />
+          <input type="number" id="h_ind_res_gate" value="" />
+          <input type="number" id="num_cit_google" value="" />
+          <input type="number" id="num_cit_res_gate" value="" />
         </div>
 
-        <!-- COLLAPSIBLE: PROJECTS -->
+        <!-- 1. PROJECTS -->
         <div class="collapsible-section" id="projectsSection">
           <div class="collapsible-header" onclick="toggleSection('projects')">
             <h2 class="section-title">
-              Externally Funded Projects (&gt;50 Lakhs)
+              1. Externally Funded Projects (&gt;50 Lakhs)
             </h2>
-            <span class="toggle-icon" id="projectsToggle">+</span>
+            <span class="toggle-icon" id="projectsToggle">×</span>
           </div>
-          <div class="collapsible-content" id="projectsContent">
+          <div class="collapsible-content expanded" id="projectsContent">
             <div class="table-container">
               <table id="projectsTable" class="data-table">
                 <thead>
@@ -157,7 +105,7 @@
                     <th>Start Date</th>
                     <th>End Date</th>
                     <th>Duration</th>
-                    <th>Budget</th>
+                    <th>Budget (Rs. Lakhs)</th>
                     <th>Action</th>
                   </tr>
                 </thead>
@@ -174,13 +122,15 @@
           </div>
         </div>
 
-        <!-- COLLAPSIBLE: PROGRAMS -->
+        <!-- 2. PROGRAMS -->
         <div class="collapsible-section" id="programsSection">
           <div class="collapsible-header" onclick="toggleSection('programs')">
-            <h2 class="section-title">Programs Organized</h2>
-            <span class="toggle-icon" id="programsToggle">+</span>
+            <h2 class="section-title">
+              2. AICRP/AINP AGM / Conference / Symposium Organized
+            </h2>
+            <span class="toggle-icon" id="programsToggle">×</span>
           </div>
-          <div class="collapsible-content" id="programsContent">
+          <div class="collapsible-content expanded" id="programsContent">
             <div class="table-container">
               <table id="programsTable" class="data-table">
                 <thead>
@@ -207,19 +157,19 @@
           </div>
         </div>
 
-        <!-- COLLAPSIBLE: IPR -->
+        <!-- 3. IPR -->
         <div class="collapsible-section" id="iprSection">
           <div class="collapsible-header" onclick="toggleSection('ipr')">
-            <h2 class="section-title">IPR Generated</h2>
-            <span class="toggle-icon" id="iprToggle">+</span>
+            <h2 class="section-title">3. IPR Generated</h2>
+            <span class="toggle-icon" id="iprToggle">×</span>
           </div>
-          <div class="collapsible-content" id="iprContent">
+          <div class="collapsible-content expanded" id="iprContent">
             <div class="table-container">
               <table id="iprTable" class="data-table">
                 <thead>
                   <tr>
                     <th>S.No.</th>
-                    <th>IPR Name/Type</th>
+                    <th>IPR Type</th>
                     <th>Date of Grant</th>
                     <th>Registration No.</th>
                     <th>Action</th>
@@ -238,13 +188,13 @@
           </div>
         </div>
 
-        <!-- COLLAPSIBLE: TECH COMMERCIALIZATION -->
+        <!-- 4. TECH COMMERCIALIZATION -->
         <div class="collapsible-section" id="techComSection">
           <div class="collapsible-header" onclick="toggleSection('techCom')">
-            <h2 class="section-title">Technology Commercialization</h2>
-            <span class="toggle-icon" id="techComToggle">+</span>
+            <h2 class="section-title">4. Technology Commercialization</h2>
+            <span class="toggle-icon" id="techComToggle">×</span>
           </div>
-          <div class="collapsible-content" id="techComContent">
+          <div class="collapsible-content expanded" id="techComContent">
             <div class="table-container">
               <table id="techComTable" class="data-table">
                 <thead>
@@ -254,7 +204,7 @@
                     <th>Name</th>
                     <th>Licensee</th>
                     <th>Date</th>
-                    <th>License Fee</th>
+                    <th>License Fee (Rs. Lakh)</th>
                     <th>Action</th>
                   </tr>
                 </thead>
@@ -271,21 +221,21 @@
           </div>
         </div>
 
-        <!-- COLLAPSIBLE: PUBLICATIONS -->
+        <!-- 5. PUBLICATIONS -->
         <div class="collapsible-section" id="pubSection">
           <div class="collapsible-header" onclick="toggleSection('pub')">
-            <h2 class="section-title">Publications</h2>
-            <span class="toggle-icon" id="pubToggle">+</span>
+            <h2 class="section-title">5. Publications</h2>
+            <span class="toggle-icon" id="pubToggle">×</span>
           </div>
-          <div class="collapsible-content" id="pubContent">
+          <div class="collapsible-content expanded" id="pubContent">
             <div class="table-container">
               <table id="pubTable" class="data-table">
                 <thead>
                   <tr>
                     <th>S.No.</th>
-                    <th>Publication (APA Style)</th>
-                    <th>Impact Factor</th>
+                    <th>Research Publication (APA Style)</th>
                     <th>NAAS Rating</th>
+                    <th>Impact Factor</th>
                     <th>Action</th>
                   </tr>
                 </thead>
@@ -302,13 +252,13 @@
           </div>
         </div>
 
-        <!-- COLLAPSIBLE: TRAINING -->
+        <!-- 6. TRAINING -->
         <div class="collapsible-section" id="trainSection">
           <div class="collapsible-header" onclick="toggleSection('train')">
-            <h2 class="section-title">Training Conducted</h2>
-            <span class="toggle-icon" id="trainToggle">+</span>
+            <h2 class="section-title">6. Training Conducted</h2>
+            <span class="toggle-icon" id="trainToggle">×</span>
           </div>
-          <div class="collapsible-content" id="trainContent">
+          <div class="collapsible-content expanded" id="trainContent">
             <div class="table-container">
               <table id="trainTable" class="data-table">
                 <thead>
@@ -337,40 +287,884 @@
           </div>
         </div>
 
-        <!-- RESEARCH HIGHLIGHTS -->
+        <!-- 7. BREEDER SEED -->
+        <div class="section">
+          <h2 class="section-title">7. Breeder Seed Produced and Supplied</h2>
+          <p class="section-reporter">
+            To be reported by: <strong>ADG / Principal Scientist (Seed)</strong>
+          </p>
+          <div class="form-group">
+            <div class="nil-toggle-row">
+              <label>Status</label>
+              <label class="radio-inline"
+                ><input
+                  type="radio"
+                  name="breeder_seed_status"
+                  value="NIL"
+                  checked
+                  onchange="toggleNilText('breeder_seed', 'NIL')"
+                />
+                NIL</label
+              >
+              <label class="radio-inline"
+                ><input
+                  type="radio"
+                  name="breeder_seed_status"
+                  value="data"
+                  onchange="toggleNilText('breeder_seed', 'data')"
+                />
+                Enter Data</label
+              >
+            </div>
+            <div id="breeder_seed_input" class="nil-hidden">
+              <input
+                type="text"
+                id="breeder_seed"
+                placeholder="Details of breeder seed produced and supplied"
+              />
+            </div>
+            <input type="hidden" id="breeder_seed_val" value="NIL" />
+          </div>
+        </div>
+
+        <!-- 8. VARIETY RELEASED -->
+        <div class="section">
+          <h2 class="section-title">8. Variety Released and Notified (Nos)</h2>
+          <p class="section-reporter">
+            To be reported by: <strong>ADG / Principal Scientist (Seed)</strong>
+          </p>
+          <div class="form-group">
+            <div class="nil-toggle-row">
+              <label>Status</label>
+              <label class="radio-inline"
+                ><input
+                  type="radio"
+                  name="variety_status"
+                  value="NIL"
+                  checked
+                  onchange="toggleNilText('variety', 'NIL')"
+                />
+                NIL</label
+              >
+              <label class="radio-inline"
+                ><input
+                  type="radio"
+                  name="variety_status"
+                  value="data"
+                  onchange="toggleNilText('variety', 'data')"
+                />
+                Enter Number</label
+              >
+            </div>
+            <div id="variety_input" class="nil-hidden">
+              <input
+                type="number"
+                id="variety"
+                min="0"
+                placeholder="Number of varieties released and notified"
+              />
+            </div>
+            <input type="hidden" id="variety_val" value="NIL" />
+          </div>
+        </div>
+
+        <!-- 9. GERMPLASM -->
         <div class="section">
           <h2 class="section-title">
-            Significant Research Findings (Required)*
+            9. Registered Elite Trait Specific Germplasm with National Gene Bank
+            (Nos)
           </h2>
+          <p class="section-reporter">
+            To be reported by: <strong>ADG / Principal Scientist (Seed)</strong>
+          </p>
+          <div class="form-group">
+            <div class="nil-toggle-row">
+              <label>Status</label>
+              <label class="radio-inline"
+                ><input
+                  type="radio"
+                  name="germplasm_status"
+                  value="NIL"
+                  checked
+                  onchange="toggleNilText('germplasm', 'NIL')"
+                />
+                NIL</label
+              >
+              <label class="radio-inline"
+                ><input
+                  type="radio"
+                  name="germplasm_status"
+                  value="data"
+                  onchange="toggleNilText('germplasm', 'data')"
+                />
+                Enter Number</label
+              >
+            </div>
+            <div id="germplasm_input" class="nil-hidden">
+              <input
+                type="number"
+                id="germplasm"
+                min="0"
+                placeholder="Number of germplasm registered"
+              />
+            </div>
+            <input type="hidden" id="germplasm_val" value="NIL" />
+          </div>
+        </div>
 
-          <!-- ⭐ FINAL CORRECT FIGURE CONTROL PANEL -->
+        <!-- 10. MICROBIAL GERMPLASM -->
+        <div class="section">
+          <h2 class="section-title">
+            10. Registered Microbial Germplasm (Nos)
+          </h2>
+          <p class="section-reporter">
+            To be reported by:
+            <strong>ADG / Principal Scientist (PP&amp;B)</strong>
+          </p>
+          <div class="form-group">
+            <div class="nil-toggle-row">
+              <label>Status</label>
+              <label class="radio-inline"
+                ><input
+                  type="radio"
+                  name="microbial_status"
+                  value="NIL"
+                  checked
+                  onchange="toggleNilText('microbial', 'NIL')"
+                />
+                NIL</label
+              >
+              <label class="radio-inline"
+                ><input
+                  type="radio"
+                  name="microbial_status"
+                  value="data"
+                  onchange="toggleNilText('microbial', 'data')"
+                />
+                Enter Number</label
+              >
+            </div>
+            <div id="microbial_input" class="nil-hidden">
+              <input
+                type="number"
+                id="microbial"
+                min="0"
+                placeholder="Number of microbial germplasm registered"
+              />
+            </div>
+            <input type="hidden" id="microbial_val" value="NIL" />
+          </div>
+        </div>
+
+        <!-- 11. SIGNIFICANT RESEARCH FINDINGS -->
+        <div class="section">
+          <h2 class="section-title">
+            11. Significant Research Findings (Required)*
+          </h2>
+          <p class="small" style="margin-bottom: 10px">
+            Brief writeup (300–500 words), accompanied by high-resolution
+            photographs/graphics; clear highlight of the potential impact of the
+            research finding.
+          </p>
+
           <div id="figureControlPanel" style="margin-bottom: 12px">
             <button type="button" class="btn btn-secondary" id="addFigureBtn">
               + Add Figure
             </button>
-
-            <!-- Dynamic figure cards -->
             <div id="figureCardList" style="margin-top: 10px"></div>
           </div>
-          <!-- END FIGURE PANEL -->
 
           <div class="form-group">
             <label for="res_highlight"
-              >Research Highlight (300-500 words)*</label
+              >Research Highlight (300–500 words)*</label
             >
-            <textarea
-              id="res_highlight"
-              rows="6"
-              required
-              placeholder="Enter significant research findings (type NA if nothing) with potential impact..."
-            ></textarea>
-
+            <!-- Rich Text Toolbar -->
+            <div class="rte-toolbar" id="resHighlightToolbar">
+              <button
+                type="button"
+                class="rte-btn"
+                onclick="rteExec('res_highlight_editor', 'bold')"
+                title="Bold"
+              >
+                <b>B</b>
+              </button>
+              <button
+                type="button"
+                class="rte-btn"
+                onclick="rteExec('res_highlight_editor', 'italic')"
+                title="Italic"
+              >
+                <i>I</i>
+              </button>
+              <button
+                type="button"
+                class="rte-btn"
+                onclick="rteExec('res_highlight_editor', 'underline')"
+                title="Underline"
+              >
+                <u>U</u>
+              </button>
+              <button
+                type="button"
+                class="rte-btn"
+                onclick="rteExec('res_highlight_editor', 'superscript')"
+                title="Superscript"
+              >
+                x²
+              </button>
+              <button
+                type="button"
+                class="rte-btn"
+                onclick="rteExec('res_highlight_editor', 'subscript')"
+                title="Subscript"
+              >
+                x₂
+              </button>
+              <button
+                type="button"
+                class="rte-btn"
+                onclick="rteExec('res_highlight_editor', 'strikeThrough')"
+                title="Strikethrough"
+              >
+                <s>S</s>
+              </button>
+              <span class="rte-sep"></span>
+              <button
+                type="button"
+                class="rte-btn"
+                onclick="insertFigPlaceholder()"
+                title="Insert Figure Placeholder"
+              >
+                [FIG]
+              </button>
+            </div>
+            <div
+              id="res_highlight_editor"
+              class="rte-editor"
+              contenteditable="true"
+              data-placeholder="Enter significant research findings (type NA if nothing) with potential impact..."
+            ></div>
+            <textarea id="res_highlight" style="display: none"></textarea>
             <small class="small">
               Word count: <span id="wordCount">0</span><br />
               Placeholders like <code>[FIG-1]</code> will be inserted
-              automatically. In the final Google Doc they become
-              <code>Figure 1</code>, <code>Figure 2</code>, etc.
+              automatically.
             </small>
+          </div>
+        </div>
+
+        <!-- 12. BREAKTHROUGHS -->
+        <div class="section">
+          <h2 class="section-title">
+            12. Breakthroughs, Innovations, and Impactful Outcomes in
+            Agriculture
+          </h2>
+          <p class="small" style="margin-bottom: 14px">
+            Verified and substantive updates (not more than 300–400 words per
+            subsection), along with high-resolution photographs if available.
+            Select <strong>NIL</strong> for all to mark entire section as NIL,
+            or <strong>Enter Data</strong> for individual subsections.
+          </p>
+
+          <!-- Master NIL / Enter Data toggle -->
+          <div class="bkt-master-row">
+            <span class="bkt-master-label">Apply to all subsections:</span>
+            <button
+              type="button"
+              class="btn btn-sm bkt-master-btn"
+              id="bktMasterNil"
+              onclick="bktMasterToggle('NIL')"
+            >
+              Mark All NIL
+            </button>
+            <button
+              type="button"
+              class="btn btn-sm bkt-master-btn-data"
+              id="bktMasterData"
+              onclick="bktMasterToggle('data')"
+            >
+              Enter Data for All
+            </button>
+          </div>
+
+          <!-- Subsection I -->
+          <div class="bkt-subsection">
+            <div class="bkt-sub-header">
+              <span class="bkt-sub-label"
+                >I. Major agricultural scientific breakthroughs, innovations, or
+                technological developments</span
+              >
+              <div class="bkt-sub-toggle">
+                <label class="radio-inline"
+                  ><input
+                    type="radio"
+                    name="bkt_1_status"
+                    value="NIL"
+                    checked
+                    onchange="bktSubToggle('bkt_1', 'NIL')"
+                  />
+                  NIL</label
+                >
+                <label class="radio-inline"
+                  ><input
+                    type="radio"
+                    name="bkt_1_status"
+                    value="data"
+                    onchange="bktSubToggle('bkt_1', 'data')"
+                  />
+                  Enter Data</label
+                >
+              </div>
+            </div>
+            <div id="bkt_1_input" class="nil-hidden bkt-sub-input">
+              <div class="rte-toolbar">
+                <button
+                  type="button"
+                  class="rte-btn"
+                  onclick="rteExec('bkt_1_editor', 'bold')"
+                >
+                  <b>B</b>
+                </button>
+                <button
+                  type="button"
+                  class="rte-btn"
+                  onclick="rteExec('bkt_1_editor', 'italic')"
+                >
+                  <i>I</i>
+                </button>
+                <button
+                  type="button"
+                  class="rte-btn"
+                  onclick="rteExec('bkt_1_editor', 'underline')"
+                >
+                  <u>U</u>
+                </button>
+                <button
+                  type="button"
+                  class="rte-btn"
+                  onclick="rteExec('bkt_1_editor', 'superscript')"
+                >
+                  x²
+                </button>
+                <button
+                  type="button"
+                  class="rte-btn"
+                  onclick="rteExec('bkt_1_editor', 'subscript')"
+                >
+                  x₂
+                </button>
+                <span class="rte-sep"></span>
+                <button
+                  type="button"
+                  class="rte-btn"
+                  onclick="bktInsertFigPlaceholder('bkt_1')"
+                  title="Insert Figure Placeholder"
+                >
+                  [FIG]
+                </button>
+              </div>
+              <div
+                id="bkt_1_editor"
+                class="rte-editor"
+                contenteditable="true"
+                data-placeholder="Describe major agricultural scientific breakthroughs or innovations..."
+              ></div>
+              <div class="bkt-fig-panel">
+                <button
+                  type="button"
+                  class="btn btn-secondary btn-sm"
+                  onclick="openBktFigModal('bkt_1')"
+                >
+                  + Add Figure
+                </button>
+                <div id="bkt_1_figcards" class="bkt-fig-cards"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Subsection II -->
+          <div class="bkt-subsection">
+            <div class="bkt-sub-header">
+              <span class="bkt-sub-label"
+                >II. First-in-India or first-in-the-world discoveries/inventions
+                in crops, livestock, fisheries, NRM, or agri-engineering</span
+              >
+              <div class="bkt-sub-toggle">
+                <label class="radio-inline"
+                  ><input
+                    type="radio"
+                    name="bkt_2_status"
+                    value="NIL"
+                    checked
+                    onchange="bktSubToggle('bkt_2', 'NIL')"
+                  />
+                  NIL</label
+                >
+                <label class="radio-inline"
+                  ><input
+                    type="radio"
+                    name="bkt_2_status"
+                    value="data"
+                    onchange="bktSubToggle('bkt_2', 'data')"
+                  />
+                  Enter Data</label
+                >
+              </div>
+            </div>
+            <div id="bkt_2_input" class="nil-hidden bkt-sub-input">
+              <div class="rte-toolbar">
+                <button
+                  type="button"
+                  class="rte-btn"
+                  onclick="rteExec('bkt_2_editor', 'bold')"
+                >
+                  <b>B</b>
+                </button>
+                <button
+                  type="button"
+                  class="rte-btn"
+                  onclick="rteExec('bkt_2_editor', 'italic')"
+                >
+                  <i>I</i>
+                </button>
+                <button
+                  type="button"
+                  class="rte-btn"
+                  onclick="rteExec('bkt_2_editor', 'underline')"
+                >
+                  <u>U</u>
+                </button>
+                <button
+                  type="button"
+                  class="rte-btn"
+                  onclick="rteExec('bkt_2_editor', 'superscript')"
+                >
+                  x²
+                </button>
+                <button
+                  type="button"
+                  class="rte-btn"
+                  onclick="rteExec('bkt_2_editor', 'subscript')"
+                >
+                  x₂
+                </button>
+                <span class="rte-sep"></span>
+                <button
+                  type="button"
+                  class="rte-btn"
+                  onclick="bktInsertFigPlaceholder('bkt_2')"
+                  title="Insert Figure Placeholder"
+                >
+                  [FIG]
+                </button>
+              </div>
+              <div
+                id="bkt_2_editor"
+                class="rte-editor"
+                contenteditable="true"
+                data-placeholder="Describe first-in-India or first-in-the-world discoveries..."
+              ></div>
+              <div class="bkt-fig-panel">
+                <button
+                  type="button"
+                  class="btn btn-secondary btn-sm"
+                  onclick="openBktFigModal('bkt_2')"
+                >
+                  + Add Figure
+                </button>
+                <div id="bkt_2_figcards" class="bkt-fig-cards"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Subsection III -->
+          <div class="bkt-subsection">
+            <div class="bkt-sub-header">
+              <span class="bkt-sub-label"
+                >III. Achievements or initiatives having significant impact on
+                Indian agriculture, productivity, sustainability, or farmers'
+                welfare</span
+              >
+              <div class="bkt-sub-toggle">
+                <label class="radio-inline"
+                  ><input
+                    type="radio"
+                    name="bkt_3_status"
+                    value="NIL"
+                    checked
+                    onchange="bktSubToggle('bkt_3', 'NIL')"
+                  />
+                  NIL</label
+                >
+                <label class="radio-inline"
+                  ><input
+                    type="radio"
+                    name="bkt_3_status"
+                    value="data"
+                    onchange="bktSubToggle('bkt_3', 'data')"
+                  />
+                  Enter Data</label
+                >
+              </div>
+            </div>
+            <div id="bkt_3_input" class="nil-hidden bkt-sub-input">
+              <div class="rte-toolbar">
+                <button
+                  type="button"
+                  class="rte-btn"
+                  onclick="rteExec('bkt_3_editor', 'bold')"
+                >
+                  <b>B</b>
+                </button>
+                <button
+                  type="button"
+                  class="rte-btn"
+                  onclick="rteExec('bkt_3_editor', 'italic')"
+                >
+                  <i>I</i>
+                </button>
+                <button
+                  type="button"
+                  class="rte-btn"
+                  onclick="rteExec('bkt_3_editor', 'underline')"
+                >
+                  <u>U</u>
+                </button>
+                <button
+                  type="button"
+                  class="rte-btn"
+                  onclick="rteExec('bkt_3_editor', 'superscript')"
+                >
+                  x²
+                </button>
+                <button
+                  type="button"
+                  class="rte-btn"
+                  onclick="rteExec('bkt_3_editor', 'subscript')"
+                >
+                  x₂
+                </button>
+                <span class="rte-sep"></span>
+                <button
+                  type="button"
+                  class="rte-btn"
+                  onclick="bktInsertFigPlaceholder('bkt_3')"
+                  title="Insert Figure Placeholder"
+                >
+                  [FIG]
+                </button>
+              </div>
+              <div
+                id="bkt_3_editor"
+                class="rte-editor"
+                contenteditable="true"
+                data-placeholder="Describe achievements or initiatives impacting Indian agriculture..."
+              ></div>
+              <div class="bkt-fig-panel">
+                <button
+                  type="button"
+                  class="btn btn-secondary btn-sm"
+                  onclick="openBktFigModal('bkt_3')"
+                >
+                  + Add Figure
+                </button>
+                <div id="bkt_3_figcards" class="bkt-fig-cards"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Subsection IV -->
+          <div class="bkt-subsection">
+            <div class="bkt-sub-header">
+              <span class="bkt-sub-label"
+                >IV. Success stories or outcomes that have demonstrably
+                benefited farmers, rural communities, or agri-based
+                industries</span
+              >
+              <div class="bkt-sub-toggle">
+                <label class="radio-inline"
+                  ><input
+                    type="radio"
+                    name="bkt_4_status"
+                    value="NIL"
+                    checked
+                    onchange="bktSubToggle('bkt_4', 'NIL')"
+                  />
+                  NIL</label
+                >
+                <label class="radio-inline"
+                  ><input
+                    type="radio"
+                    name="bkt_4_status"
+                    value="data"
+                    onchange="bktSubToggle('bkt_4', 'data')"
+                  />
+                  Enter Data</label
+                >
+              </div>
+            </div>
+            <div id="bkt_4_input" class="nil-hidden bkt-sub-input">
+              <div class="rte-toolbar">
+                <button
+                  type="button"
+                  class="rte-btn"
+                  onclick="rteExec('bkt_4_editor', 'bold')"
+                >
+                  <b>B</b>
+                </button>
+                <button
+                  type="button"
+                  class="rte-btn"
+                  onclick="rteExec('bkt_4_editor', 'italic')"
+                >
+                  <i>I</i>
+                </button>
+                <button
+                  type="button"
+                  class="rte-btn"
+                  onclick="rteExec('bkt_4_editor', 'underline')"
+                >
+                  <u>U</u>
+                </button>
+                <button
+                  type="button"
+                  class="rte-btn"
+                  onclick="rteExec('bkt_4_editor', 'superscript')"
+                >
+                  x²
+                </button>
+                <button
+                  type="button"
+                  class="rte-btn"
+                  onclick="rteExec('bkt_4_editor', 'subscript')"
+                >
+                  x₂
+                </button>
+                <span class="rte-sep"></span>
+                <button
+                  type="button"
+                  class="rte-btn"
+                  onclick="bktInsertFigPlaceholder('bkt_4')"
+                  title="Insert Figure Placeholder"
+                >
+                  [FIG]
+                </button>
+              </div>
+              <div
+                id="bkt_4_editor"
+                class="rte-editor"
+                contenteditable="true"
+                data-placeholder="Describe success stories that benefited farmers or rural communities..."
+              ></div>
+              <div class="bkt-fig-panel">
+                <button
+                  type="button"
+                  class="btn btn-secondary btn-sm"
+                  onclick="openBktFigModal('bkt_4')"
+                >
+                  + Add Figure
+                </button>
+                <div id="bkt_4_figcards" class="bkt-fig-cards"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Subsection V -->
+          <div
+            class="bkt-subsection"
+            style="border-bottom: none; margin-bottom: 0"
+          >
+            <div class="bkt-sub-header">
+              <span class="bkt-sub-label">V. Any other development</span>
+              <div class="bkt-sub-toggle">
+                <label class="radio-inline"
+                  ><input
+                    type="radio"
+                    name="bkt_5_status"
+                    value="NIL"
+                    checked
+                    onchange="bktSubToggle('bkt_5', 'NIL')"
+                  />
+                  NIL</label
+                >
+                <label class="radio-inline"
+                  ><input
+                    type="radio"
+                    name="bkt_5_status"
+                    value="data"
+                    onchange="bktSubToggle('bkt_5', 'data')"
+                  />
+                  Enter Data</label
+                >
+              </div>
+            </div>
+            <div id="bkt_5_input" class="nil-hidden bkt-sub-input">
+              <div class="rte-toolbar">
+                <button
+                  type="button"
+                  class="rte-btn"
+                  onclick="rteExec('bkt_5_editor', 'bold')"
+                >
+                  <b>B</b>
+                </button>
+                <button
+                  type="button"
+                  class="rte-btn"
+                  onclick="rteExec('bkt_5_editor', 'italic')"
+                >
+                  <i>I</i>
+                </button>
+                <button
+                  type="button"
+                  class="rte-btn"
+                  onclick="rteExec('bkt_5_editor', 'underline')"
+                >
+                  <u>U</u>
+                </button>
+                <button
+                  type="button"
+                  class="rte-btn"
+                  onclick="rteExec('bkt_5_editor', 'superscript')"
+                >
+                  x²
+                </button>
+                <button
+                  type="button"
+                  class="rte-btn"
+                  onclick="rteExec('bkt_5_editor', 'subscript')"
+                >
+                  x₂
+                </button>
+                <span class="rte-sep"></span>
+                <button
+                  type="button"
+                  class="rte-btn"
+                  onclick="bktInsertFigPlaceholder('bkt_5')"
+                  title="Insert Figure Placeholder"
+                >
+                  [FIG]
+                </button>
+              </div>
+              <div
+                id="bkt_5_editor"
+                class="rte-editor"
+                contenteditable="true"
+                data-placeholder="Describe any other development..."
+              ></div>
+              <div class="bkt-fig-panel">
+                <button
+                  type="button"
+                  class="btn btn-secondary btn-sm"
+                  onclick="openBktFigModal('bkt_5')"
+                >
+                  + Add Figure
+                </button>
+                <div id="bkt_5_figcards" class="bkt-fig-cards"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 13. NATIONAL AGRICULTURE ISSUES -->
+        <div class="section">
+          <h2 class="section-title">13. National Agriculture Issues</h2>
+          <div class="form-group">
+            <div class="nil-toggle-row">
+              <label>Status</label>
+              <label class="radio-inline"
+                ><input
+                  type="radio"
+                  name="nat_agri_status"
+                  value="NIL"
+                  checked
+                  onchange="natAgriToggle('NIL')"
+                />
+                NIL</label
+              >
+              <label class="radio-inline"
+                ><input
+                  type="radio"
+                  name="nat_agri_status"
+                  value="data"
+                  onchange="natAgriToggle('data')"
+                />
+                Enter Data</label
+              >
+            </div>
+            <div id="nat_agri_input" class="nil-hidden">
+              <div id="nat_agri_bullets" class="bullet-list"></div>
+              <button
+                type="button"
+                class="btn btn-secondary btn-sm"
+                id="addBulletBtn"
+                onclick="addBulletPoint()"
+                style="margin-top: 8px"
+              >
+                + Add Bullet Point
+              </button>
+              <small class="small" style="display: block; margin-top: 6px"
+                >Each line is one bullet point. Press Enter or click "+ Add
+                Bullet Point" to add more.</small
+              >
+            </div>
+            <input type="hidden" id="nat_agri_val" value="NIL" />
+          </div>
+        </div>
+
+        <!-- 14. HAM STATUS -->
+        <div class="collapsible-section" id="hamSection">
+          <div class="collapsible-header" onclick="toggleSection('ham')">
+            <h2 class="section-title">
+              14. Status of Directions Issued by HAM (All ADGs/Directors)
+            </h2>
+            <span class="toggle-icon" id="hamToggle">×</span>
+          </div>
+          <div class="collapsible-content expanded" id="hamContent">
+            <div class="nil-toggle-row" style="padding: 0 0 10px 0">
+              <label>Status</label>
+              <label class="radio-inline"
+                ><input
+                  type="radio"
+                  name="ham_status"
+                  value="NA"
+                  checked
+                  onchange="toggleHamTable('NA')"
+                />
+                NA</label
+              >
+              <label class="radio-inline"
+                ><input
+                  type="radio"
+                  name="ham_status"
+                  value="data"
+                  onchange="toggleHamTable('data')"
+                />
+                Enter Data</label
+              >
+            </div>
+            <div id="hamTableArea" style="display: none">
+              <div class="table-container">
+                <table id="hamTable" class="data-table">
+                  <thead>
+                    <tr>
+                      <th>S.No.</th>
+                      <th>Details of Meeting</th>
+                      <th>HAM Comments</th>
+                      <th>Follow-up Action Taken</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody id="hamBody"></tbody>
+                </table>
+              </div>
+              <button
+                type="button"
+                class="btn btn-secondary"
+                onclick="addHAMRow()"
+              >
+                + Add Row
+              </button>
+            </div>
           </div>
         </div>
 
@@ -399,7 +1193,6 @@
     <div id="figureModal" class="modal hidden">
       <div class="modal-content">
         <h3 class="modal-title">Add Figure</h3>
-
         <div class="form-group">
           <label for="figFileInput">Select Image</label>
           <input
@@ -408,7 +1201,6 @@
             accept=".jpg,.jpeg,.png,.tiff,.tif"
           />
         </div>
-
         <div class="form-group">
           <label>Preview</label>
           <img
@@ -417,16 +1209,65 @@
             alt="Figure preview"
           />
         </div>
-
         <div class="form-group">
-          <label for="figCaptionInput">Figure Caption</label>
-          <textarea
-            id="figCaptionInput"
-            rows="3"
-            placeholder="Enter concise caption for this figure"
-          ></textarea>
+          <label>Figure Caption</label>
+          <div class="rte-toolbar" style="border-radius: 8px 8px 0 0">
+            <button
+              type="button"
+              class="rte-btn"
+              onclick="rteExec('figCaptionEditor', 'bold')"
+              title="Bold"
+            >
+              <b>B</b>
+            </button>
+            <button
+              type="button"
+              class="rte-btn"
+              onclick="rteExec('figCaptionEditor', 'italic')"
+              title="Italic"
+            >
+              <i>I</i>
+            </button>
+            <button
+              type="button"
+              class="rte-btn"
+              onclick="rteExec('figCaptionEditor', 'underline')"
+              title="Underline"
+            >
+              <u>U</u>
+            </button>
+            <button
+              type="button"
+              class="rte-btn"
+              onclick="rteExec('figCaptionEditor', 'superscript')"
+              title="Superscript"
+            >
+              x²
+            </button>
+            <button
+              type="button"
+              class="rte-btn"
+              onclick="rteExec('figCaptionEditor', 'subscript')"
+              title="Subscript"
+            >
+              x₂
+            </button>
+            <button
+              type="button"
+              class="rte-btn"
+              onclick="rteExec('figCaptionEditor', 'strikeThrough')"
+              title="Strikethrough"
+            >
+              <s>S</s>
+            </button>
+          </div>
+          <div
+            id="figCaptionEditor"
+            class="rte-editor caption-editor"
+            contenteditable="true"
+            data-placeholder="Enter concise caption for this figure..."
+          ></div>
         </div>
-
         <div class="modal-actions">
           <button type="button" class="btn btn-secondary" id="figInsertBtn">
             Insert Figure
@@ -438,7 +1279,92 @@
       </div>
     </div>
 
-    <!-- JS -->
+    <!-- BKT Figure Modal (shared for all subsections) -->
+    <div id="bktFigureModal" class="modal hidden">
+      <div class="modal-content">
+        <h3 class="modal-title">Add Figure</h3>
+        <div class="form-group">
+          <label>Select Image</label>
+          <input
+            type="file"
+            id="bktFigFileInput"
+            accept=".jpg,.jpeg,.png,.tiff,.tif"
+          />
+        </div>
+        <div class="form-group">
+          <label>Preview</label>
+          <img id="bktFigPreview" class="hidden fig-preview" alt="Preview" />
+        </div>
+        <div class="form-group">
+          <label>Figure Caption</label>
+          <div class="rte-toolbar" style="border-radius: 8px 8px 0 0">
+            <button
+              type="button"
+              class="rte-btn"
+              onclick="rteExec('bktFigCaptionEditor', 'bold')"
+              title="Bold"
+            >
+              <b>B</b>
+            </button>
+            <button
+              type="button"
+              class="rte-btn"
+              onclick="rteExec('bktFigCaptionEditor', 'italic')"
+              title="Italic"
+            >
+              <i>I</i>
+            </button>
+            <button
+              type="button"
+              class="rte-btn"
+              onclick="rteExec('bktFigCaptionEditor', 'underline')"
+              title="Underline"
+            >
+              <u>U</u>
+            </button>
+            <button
+              type="button"
+              class="rte-btn"
+              onclick="rteExec('bktFigCaptionEditor', 'superscript')"
+              title="Superscript"
+            >
+              x²
+            </button>
+            <button
+              type="button"
+              class="rte-btn"
+              onclick="rteExec('bktFigCaptionEditor', 'subscript')"
+              title="Subscript"
+            >
+              x₂
+            </button>
+            <button
+              type="button"
+              class="rte-btn"
+              onclick="rteExec('bktFigCaptionEditor', 'strikeThrough')"
+              title="Strikethrough"
+            >
+              <s>S</s>
+            </button>
+          </div>
+          <div
+            id="bktFigCaptionEditor"
+            class="rte-editor caption-editor"
+            contenteditable="true"
+            data-placeholder="Enter concise caption for this figure..."
+          ></div>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" id="bktFigInsertBtn">
+            Insert Figure
+          </button>
+          <button type="button" class="btn btn-danger" id="bktFigCancelBtn">
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+
     <script src="script.js"></script>
   </body>
 </html>
