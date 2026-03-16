@@ -1458,7 +1458,7 @@ document
         }
 
         addTableSection(
-          "1. Externally Funded Projects (>50 Lakhs)",
+          "1. Externally Funded Projects (>50 Lakhs) (approved in this period)",
           payload.projects,
           ["col_1", "col_2", "col_3", "col_4", "col_5", "col_6"],
         );
